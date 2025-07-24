@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+} from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Product } from 'src/products/entities/product.entity';
 
@@ -14,4 +20,7 @@ export class Like {
   @ManyToOne(() => Product, (product) => product.likes)
   @JoinColumn({ name: 'product_id' })
   product: Product;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 }
