@@ -6,11 +6,11 @@ export class Follow {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'follower_id' })
+  @ManyToOne(() => User, (user) => user.followee)
+  @JoinColumn({ name: 'follower' })
   follower: User;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'following_id' })
-  following: User;
+  @ManyToOne(() => User, (user) => user.followers)
+  @JoinColumn({ name: 'followee' })
+  followee: User;
 }

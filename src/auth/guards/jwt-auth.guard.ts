@@ -36,11 +36,10 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     try {
-      log.debug(`${lhd} JWT_SECRET [${this.configService.get('JWT_SECRET')}]`);
       const payload = this.jwtService.verify(token, {
         secret: this.configService.get('JWT_SECRET'),
       });
-      log.debug(`${lhd} payload.data [${JSON.stringify(payload.data)}]`);
+      // log.debug(`${lhd} payload.data [${JSON.stringify(payload.data)}]`);
 
       const user = await this.usersService.getUserById(payload.data);
       if (!user) throw new UnauthorizedException('Invalid user');

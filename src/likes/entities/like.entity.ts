@@ -13,7 +13,7 @@ export class Like {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.likes)
   @JoinColumn({ name: 'user_id' })
   user: User;
 

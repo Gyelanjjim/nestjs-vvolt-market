@@ -9,16 +9,21 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { ProductStatus } from './product-status.entity';
 import { ProductImage } from './product-image.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Review } from 'src/reviews/entities/review.entity';
 import { Category } from 'src/categories/entities/category.entity';
+import { ProductStatus } from 'src/products/enums/product-status.enum';
+import { Order } from 'src/orders/entities/order.entity';
 
 @Entity('products')
 export class Product {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @ManyToOne(() => User, (user) => user.products)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
   @Column({ length: 100 })
   title: string;
@@ -33,13 +38,18 @@ export class Product {
   @JoinColumn({ name: 'user_id' })
   seller: User;
 
-  @ManyToOne(() => ProductStatus)
-  @JoinColumn({ name: 'status_id' })
+  @Column({
+    type: 'enum',
+    enum: ProductStatus,
+  })
   status: ProductStatus;
 
   @ManyToOne(() => Category)
   @JoinColumn({ name: 'category_id' })
   category: Category;
+
+  @OneToMany(() => Order, (order) => order.product)
+  orders: Order[];
 
   @OneToMany(() => ProductImage, (image) => image.product)
   images: ProductImage[];
