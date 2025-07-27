@@ -8,7 +8,7 @@ import {
   JoinColumn,
   Unique,
 } from 'typeorm';
-import { SocialPlatform } from './social-platform.entity';
+import { SocialPlatform } from 'src/users/enums/social-platform.enum';
 
 @Entity()
 @Unique(['nickname'])
@@ -37,9 +37,8 @@ export class User {
   @Column({ length: 50 })
   social_id: string;
 
-  @ManyToOne(() => SocialPlatform)
-  @JoinColumn({ name: 'social_platform_id' })
-  socialPlatform: SocialPlatform;
+  @Column({ type: 'enum', enum: SocialPlatform })
+  social_platform_id: SocialPlatform;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

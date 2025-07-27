@@ -8,11 +8,20 @@ import { CategoriesModule } from './categories/categories.module';
 import { OrdersModule } from './orders/orders.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // 어디서든 import 없이 사용 가능
+    }),
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.get('JWT_SECRET'),
+        signOptions: { expiresIn: '1d' },
+      }),
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -32,8 +41,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     CategoriesModule,
     OrdersModule,
     ReviewsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
+  exports: [JwtModule],
 })
 export class AppModule {}
