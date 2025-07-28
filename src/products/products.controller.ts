@@ -12,6 +12,7 @@ import {
   UploadedFiles,
   BadRequestException,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -77,11 +78,12 @@ export class ProductsController {
    */
   @Get(':productId')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('productId') productId: string) {
+  findOne(@Request() req, @Param('productId', ParseIntPipe) productId: number) {
     const lhd = 'readProduct -';
     log.info(`${lhd} start.`);
+    const userId = req.user.id;
 
-    return this.productsService.findOne(+productId);
+    return this.productsService.findOne(productId, userId);
   }
 
   /**
@@ -94,7 +96,7 @@ export class ProductsController {
     const lhd = 'readStore -';
     log.info(`${lhd} start.`);
 
-    return this.productsService.findOne(+storeId);
+    return this.productsService.findStoreOne(+storeId);
   }
 
   /**

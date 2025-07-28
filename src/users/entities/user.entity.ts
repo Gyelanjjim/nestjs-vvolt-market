@@ -45,7 +45,7 @@ export class User {
   @Column({ type: 'enum', enum: SocialPlatform })
   social_platform_id: SocialPlatform;
 
-  @OneToMany(() => Product, (product) => product.user)
+  @OneToMany(() => Product, (product) => product.seller)
   products: Product[];
 
   @OneToMany(() => Order, (order) => order.user)

@@ -21,10 +21,6 @@ export class Product {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.products)
-  @JoinColumn({ name: 'user_id' })
-  user: User;
-
   @Column({ length: 100 })
   name: string;
 
@@ -43,7 +39,7 @@ export class Product {
   @Column('decimal', { precision: 11, scale: 8 })
   longitude: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.products)
   @JoinColumn({ name: 'user_id' })
   seller: User;
 

@@ -10,10 +10,20 @@ import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { S3Service } from 'src/common/service';
 import { Category } from 'src/categories/entities/category.entity';
+import { Follow } from 'src/users/entities/follow.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Product, ProductImage, Like, Review, Category]),
+    TypeOrmModule.forFeature([
+      Product,
+      User,
+      ProductImage,
+      Like,
+      Review,
+      Category,
+      Follow,
+    ]),
     UsersModule,
     AuthModule,
   ],

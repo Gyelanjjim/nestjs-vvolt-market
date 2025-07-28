@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +13,9 @@ import { User } from 'src/users/entities/user.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { log } from 'src/common/logger.util';
 import { GetProductsQueryDto } from 'src/products/dto/get-product-query.dto';
+import { Follow } from 'src/users/entities/follow.entity';
+import { Review } from 'src/reviews/entities/review.entity';
+import { Like } from 'src/likes/entities/like.entity';
 
 @Injectable()
 export class ProductsService {
@@ -18,6 +25,15 @@ export class ProductsService {
 
     @InjectRepository(ProductImage)
     private readonly productImageRepo: Repository<ProductImage>,
+
+    @InjectRepository(Follow)
+    private readonly followRepo: Repository<Follow>,
+
+    @InjectRepository(Review)
+    private readonly reviewRepo: Repository<Review>,
+
+    @InjectRepository(Like)
+    private readonly likeRepo: Repository<Like>,
   ) {}
 
   async create(dto: CreateProductDto, userId: number, lhd: string) {
@@ -122,9 +138,71 @@ export class ProductsService {
     return products;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(productId: number, userId: number) {
+    const product = await this.productRepo
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.images', 'images')
+      .leftJoinAndSelect('product.seller', 'seller') // User entity
+      .where('product.id = :productId', { productId })
+      .select([
+        'product.id',
+        'product.name',
+        'product.description',
+        'product.price',
+        'product.location',
+        'product.latitude',
+        'product.longitude',
+        'product.status',
+        'category.id',
+        'category.name',
+        'images.image_url',
+        'seller.id',
+        'seller.nickname',
+        'seller.user_image',
+      ])
+      .getOne();
+
+    if (!product) {
+      throw new NotFoundException('상품을 찾을 수 없습니다');
+    }
+
+    // 스토어의 총 상품 수
+    const productCount = await this.productRepo.count({
+      where: { seller: { id: product.seller.id } },
+    });
+
+    // 팔로워 수 (follow 테이블 필요)
+    const followerCount = await this.followRepo.count({
+      where: { followee: { id: product.seller.id } },
+    });
+
+    // 리뷰 정보
+    const reviews = await this.reviewRepo.find({
+      where: { product: { id: productId } },
+      select: ['user', 'content', 'rating'],
+    });
+
+    // 좋아요 여부
+    const isLiked = await this.likeRepo.findOne({
+      where: { product: { id: productId }, user: { id: userId } },
+    });
+
+    return {
+      product,
+      store: {
+        id: product.seller.id,
+        nickname: product.seller.nickname,
+        userImage: product.seller.userImage,
+        productCount,
+        followerCount,
+      },
+      reviews,
+      isLiked: !!isLiked,
+    };
   }
+
+  findStoreOne(storeId: number) {}
 
   update(id: number, updateProductDto: UpdateProductDto) {
     return `This action updates a #${id} product`;
