@@ -15,9 +15,9 @@ export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'buyer_id' })
-  buyer: User;
+  @ManyToOne(() => User, (user) => user.orders)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
   @ManyToOne(() => Product, (product) => product.orders)
   @JoinColumn({ name: 'product_id' })
@@ -29,10 +29,6 @@ export class Order {
     default: OrderStatus.ON_SALE,
   })
   status: OrderStatus;
-
-  @ManyToOne(() => User, (user) => user.orders)
-  @JoinColumn({ name: 'user_id' })
-  user: User;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
