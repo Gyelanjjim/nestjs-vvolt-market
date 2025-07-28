@@ -104,6 +104,7 @@ export class ProductsController {
    * @returns
    */
   @Patch(':productId')
+  @UseGuards(JwtAuthGuard)
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productsService.update(+id, updateProductDto);
   }
@@ -112,8 +113,12 @@ export class ProductsController {
    * @desc 상품 삭제
    * @returns
    */
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productsService.remove(+id);
+  @Delete(':productId')
+  @UseGuards(JwtAuthGuard)
+  remove(@Request() req, @Param('productId', ParseIntPipe) productId: number) {
+    const lhd = 'deleteProduct -';
+    log.info(`${lhd} start.`);
+
+    return this.productsService.remove(productId, req.user.id, lhd);
   }
 }

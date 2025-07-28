@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -208,7 +209,26 @@ export class ProductsService {
     return `This action updates a #${id} product`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(productId: number, userId: number, lhd) {
+    const product = await this.productRepo.findOne({
+      where: { id: productId },
+      relations: ['seller'],
+    });
+
+    if (!product) {
+      log.warn(`${lhd} failed. not found product. => productId [${productId}]`);
+      throw new NotFoundException('상품을 찾을 수 없습니다');
+    }
+
+    // 본인 상품만 삭제 가능
+    if (product.seller.id !== userId) {
+      log.warn(`${lhd} failed. not authorized. => userId [${userId}]`);
+      throw new ForbiddenException('상품을 삭제할 권한이 없습니다');
+    }
+
+    await this.productRepo.delete(productId);
+    log.info(`${lhd} success. deleted productId [${productId}]`);
+
+    return { message: 'PRODUCT_DELETE_SUCCESS' };
   }
 }
