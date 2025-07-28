@@ -203,7 +203,30 @@ export class ProductsService {
     };
   }
 
-  findStoreOne(storeId: number) {}
+  async findStoreProducts(storeId: number, lhd: string) {
+    const products = await this.productRepo
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.images', 'images')
+      .where('product.seller.id = :storeId', { storeId })
+      .select([
+        'product.id',
+        'product.name',
+        'product.price',
+        'product.location',
+        'product.createdAt',
+        'images.image_url',
+        'category.id',
+        'category.name',
+      ])
+      .orderBy('product.createdAt', 'DESC')
+      .getMany();
+
+    log.info(
+      `${lhd} success. storeId [${storeId}], count [${products.length}]`,
+    );
+    return products;
+  }
 
   async update(
     productId: number,

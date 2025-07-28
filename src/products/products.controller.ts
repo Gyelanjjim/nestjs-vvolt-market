@@ -88,16 +88,17 @@ export class ProductsController {
   }
 
   /**
-   * @desc 상품 판매자(상점) 상세
+   * @desc 판매자(상점)의 상품 목록
    * @returns
    */
   @Get('store/:storeId')
   @UseGuards(JwtAuthGuard)
-  findStoreOne(@Param('storeId') storeId: string) {
-    const lhd = 'readStore -';
-    log.info(`${lhd} start.`);
-
-    return this.productsService.findStoreOne(+storeId);
+  getStoreProducts(
+    @Param('storeId', ParseIntPipe) storeId: number,
+    @Request() req,
+  ) {
+    const lhd = `getStoreProducts -`;
+    return this.productsService.findStoreProducts(storeId, lhd);
   }
 
   /**
