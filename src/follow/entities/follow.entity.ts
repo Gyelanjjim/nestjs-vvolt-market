@@ -1,16 +1,16 @@
+import { User } from 'src/users/entities/user.entity';
 import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { User } from './user.entity';
 
 @Entity('follow')
 export class Follow {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.followee)
+  @ManyToOne(() => User, (user) => user.followees, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'follower' })
   follower: User;
 
-  @ManyToOne(() => User, (user) => user.followers)
+  @ManyToOne(() => User, (user) => user.followers, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'followee' })
   followee: User;
 }

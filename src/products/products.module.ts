@@ -10,8 +10,8 @@ import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { S3Service } from 'src/common/service';
 import { Category } from 'src/categories/entities/category.entity';
-import { Follow } from 'src/users/entities/follow.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Follow } from 'src/follow/entities/follow.entity';
 
 @Module({
   imports: [

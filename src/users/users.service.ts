@@ -12,10 +12,10 @@ import { SocialPlatform } from 'src/users/enums/social-platform.enum';
 import { Product } from 'src/products/entities/product.entity';
 import { Review } from 'src/reviews/entities/review.entity';
 import { Like } from 'src/likes/entities/like.entity';
-import { Follow } from 'src/users/entities/follow.entity';
 import { Order } from 'src/orders/entities/order.entity';
 import { UserDetailDto } from 'src/users/dto/get-user-detail.dto';
 import { log } from 'src/common/logger.util';
+import { Follow } from 'src/follow/entities/follow.entity';
 
 @Injectable()
 export class UsersService {

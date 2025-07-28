@@ -13,6 +13,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { LikesModule } from './likes/likes.module';
 import { S3Service } from 'src/common/service';
 import { TosspaymentModule } from './tosspayment/tosspayment.module';
+import { FollowModule } from './follow/follow.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { TosspaymentModule } from './tosspayment/tosspayment.module';
     AuthModule,
     LikesModule,
     TosspaymentModule,
+    FollowModule,
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],

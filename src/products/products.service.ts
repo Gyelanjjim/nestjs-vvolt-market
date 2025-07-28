@@ -14,9 +14,9 @@ import { User } from 'src/users/entities/user.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { log } from 'src/common/logger.util';
 import { GetProductsQueryDto } from 'src/products/dto/get-product-query.dto';
-import { Follow } from 'src/users/entities/follow.entity';
 import { Review } from 'src/reviews/entities/review.entity';
 import { Like } from 'src/likes/entities/like.entity';
+import { Follow } from 'src/follow/entities/follow.entity';
 
 @Injectable()
 export class ProductsService {

@@ -5,8 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { Order } from 'src/orders/entities/order.entity';
-import { Follow } from 'src/users/entities/follow.entity';
 import { CommonModule } from 'src/common/common.module';
+import { Follow } from 'src/follow/entities/follow.entity';
 
 @Module({
   imports: [

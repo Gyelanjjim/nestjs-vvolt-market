@@ -4,8 +4,6 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
   Unique,
   OneToMany,
 } from 'typeorm';
@@ -13,7 +11,7 @@ import { SocialPlatform } from 'src/users/enums/social-platform.enum';
 import { Product } from 'src/products/entities/product.entity';
 import { Order } from 'src/orders/entities/order.entity';
 import { Like } from 'src/likes/entities/like.entity';
-import { Follow } from 'src/users/entities/follow.entity';
+import { Follow } from 'src/follow/entities/follow.entity';
 
 @Entity()
 @Unique(['nickname'])
@@ -55,7 +53,7 @@ export class User {
   likes: Like[];
 
   @OneToMany(() => Follow, (follow) => follow.follower)
-  followee: Follow[];
+  followees: Follow[];
 
   @OneToMany(() => Follow, (follow) => follow.followee)
   followers: Follow[];
