@@ -13,6 +13,7 @@ import {
   BadRequestException,
   Query,
   ParseIntPipe,
+  Put,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -103,10 +104,22 @@ export class ProductsController {
    * @desc 상품 수정
    * @returns
    */
-  @Patch(':productId')
+  @Put(':productId')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(+id, updateProductDto);
+  update(
+    @Request() req,
+    @Param('productId', ParseIntPipe) productId: number,
+    @Body() updateProductDto: UpdateProductDto,
+  ) {
+    const lhd = 'updateProduct -';
+    log.info(`${lhd} start.`);
+
+    return this.productsService.update(
+      productId,
+      updateProductDto,
+      req.user.id,
+      lhd,
+    );
   }
 
   /**

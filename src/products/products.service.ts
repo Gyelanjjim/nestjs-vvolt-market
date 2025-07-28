@@ -205,8 +205,109 @@ export class ProductsService {
 
   findStoreOne(storeId: number) {}
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(
+    productId: number,
+    dto: UpdateProductDto,
+    userId: number,
+    lhd: string,
+  ) {
+    const product = await this.productRepo.findOne({
+      where: { id: productId },
+      relations: ['seller'],
+    });
+
+    if (!product) {
+      log.warn(`${lhd} failed. not found. => productId [${productId}]`);
+      throw new NotFoundException('상품을 찾을 수 없습니다');
+    }
+
+    if (product.seller.id !== userId) {
+      log.warn(`${lhd} failed. not authorized. => userId [${userId}]`);
+      throw new ForbiddenException('상품을 수정할 권한이 없습니다');
+    }
+
+    const queryRunner = this.productRepo.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      // 상품 정보 수정
+      if (dto.categoryId) {
+        product.category = { id: dto.categoryId } as Category;
+      }
+
+      Object.assign(product, {
+        name: dto.name,
+        description: dto.description,
+        price: dto.price,
+        location: dto.location,
+        latitude: dto.latitude,
+        longitude: dto.longitude,
+        status: dto.status,
+      });
+
+      await queryRunner.manager.save(product);
+
+      // 이미지 교체
+      if (dto.imageUrl && dto.imageUrl.length > 0) {
+        // 기존 이미지 삭제
+        await queryRunner.manager.delete(ProductImage, {
+          product: { id: productId },
+        });
+
+        // 새 이미지 삽입
+        const imageEntities = dto.imageUrl.map((url) =>
+          this.productImageRepo.create({
+            product: { id: productId } as Product,
+            image_url: url,
+          }),
+        );
+        await queryRunner.manager.save(imageEntities);
+      }
+
+      // if (dto.imageUrl && dto.imageUrl.length > 0) {
+      //   // 1. 기존 이미지 목록 조회
+      //   const prevImages = await this.productImageRepo.find({
+      //     where: { product: { id: productId } },
+      //   });
+
+      //   const prevUrls = prevImages.map((img) => img.image_url);
+      //   const newUrls = dto.imageUrl;
+
+      //   // 2. 제거된 이미지 URL 목록 추출
+      //   const deletedUrls = prevUrls.filter((url) => !newUrls.includes(url));
+
+      //   // 3. S3에서 삭제
+      //   for (const url of deletedUrls) {
+      //     const key = this.extractS3KeyFromUrl(url);
+      //     await this.s3Service.deleteFile(key);
+      //   }
+
+      //   // 4. DB 이미지 삭제
+      //   await queryRunner.manager.delete(ProductImage, {
+      //     product: { id: productId },
+      //   });
+
+      //   // 5. DB 이미지 새로 저장
+      //   const imageEntities = newUrls.map((url) =>
+      //     this.productImageRepo.create({
+      //       product: { id: productId } as Product,
+      //       image_url: url,
+      //     }),
+      //   );
+      //   await queryRunner.manager.save(imageEntities);
+      // }
+
+      await queryRunner.commitTransaction();
+      log.info(`${lhd} success.`);
+      return { message: 'PRODUCT_UPDATE_SUCCESS' };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      log.error(`${lhd} failed. error [${JSON.stringify(err)}]`);
+      throw new InternalServerErrorException('상품 수정 실패');
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async remove(productId: number, userId: number, lhd) {
