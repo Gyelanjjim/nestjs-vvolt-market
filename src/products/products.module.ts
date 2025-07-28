@@ -6,9 +6,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductImage } from 'src/products/entities/product-image.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Review } from 'src/reviews/entities/review.entity';
+import { UsersModule } from 'src/users/users.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Product, ProductImage, Like, Review])],
+  imports: [
+    TypeOrmModule.forFeature([Product, ProductImage, Like, Review]),
+    UsersModule,
+    AuthModule,
+  ],
   exports: [TypeOrmModule],
   controllers: [ProductsController],
   providers: [ProductsService],

@@ -26,13 +26,22 @@ export class Product {
   user: User;
 
   @Column({ length: 100 })
-  title: string;
+  name: string;
 
   @Column({ type: 'text' })
   description: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
+
+  @Column({ length: 50 })
+  location: string;
+
+  @Column('decimal', { precision: 10, scale: 8 })
+  latitude: number;
+
+  @Column('decimal', { precision: 11, scale: 8 })
+  longitude: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
