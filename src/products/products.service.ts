@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { log } from 'src/common/logger.util';
+import { GetProductsQueryDto } from 'src/products/dto/get-product-query.dto';
 
 @Injectable()
 export class ProductsService {
@@ -81,8 +82,44 @@ export class ProductsService {
     }
   }
 
-  findAll() {
-    return `This action returns all products`;
+  async findAll(query: GetProductsQueryDto, lhd: string) {
+    const { sort, category } = query;
+
+    const qb = this.productRepo
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.images', 'images') // @OneToMany로 연결된 product_images
+      .select([
+        'product.id',
+        'product.name',
+        'product.price',
+        'product.created_at',
+        'product.location',
+        'product.latitude',
+        'product.longitude',
+        'category.id',
+        'category.name',
+        'images.image_url',
+      ]);
+
+    // 정렬 조건
+    if (sort === 'pHigh') {
+      qb.orderBy('product.price', 'DESC');
+    } else if (sort === 'pLow') {
+      qb.orderBy('product.price', 'ASC');
+    } else {
+      qb.orderBy('product.created_at', 'DESC'); // default
+    }
+
+    // 필터 조건 (옵션)
+    if (category) {
+      qb.andWhere('category.id = :category', { category });
+    }
+
+    const products = await qb.getMany();
+    log.info(`${lhd} success.`);
+
+    return products;
   }
 
   findOne(id: number) {

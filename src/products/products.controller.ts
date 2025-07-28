@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -19,6 +20,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { log } from 'src/common/logger.util';
 import { S3MultipleInterceptor, S3Service } from 'src/common/service';
 import { S3MulterFile } from 'src/common/types';
+import { GetProductsQueryDto } from 'src/products/dto/get-product-query.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -62,11 +64,11 @@ export class ProductsController {
    * @returns
    */
   @Get()
-  findAll() {
+  findAll(@Query() query: GetProductsQueryDto) {
     const lhd = 'listProduct -';
     log.info(`${lhd} start.`);
 
-    return this.productsService.findAll();
+    return this.productsService.findAll(query, lhd);
   }
 
   /**

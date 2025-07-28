@@ -9,10 +9,11 @@ import { Review } from 'src/reviews/entities/review.entity';
 import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { S3Service } from 'src/common/service';
+import { Category } from 'src/categories/entities/category.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Product, ProductImage, Like, Review]),
+    TypeOrmModule.forFeature([Product, ProductImage, Like, Review, Category]),
     UsersModule,
     AuthModule,
   ],
