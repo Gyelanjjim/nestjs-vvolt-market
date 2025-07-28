@@ -12,6 +12,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from 'src/auth/auth.module';
 import { LikesModule } from './likes/likes.module';
 import { S3Service } from 'src/common/service';
+import { TosspaymentModule } from './tosspayment/tosspayment.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { S3Service } from 'src/common/service';
     ReviewsModule,
     AuthModule,
     LikesModule,
+    TosspaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],

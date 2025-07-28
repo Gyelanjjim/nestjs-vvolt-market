@@ -5,10 +5,12 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { OrderStatus } from 'src/orders/enums/order-status.enum';
+import { TossPayment } from 'src/tosspayment/entities/tosspayment.entity';
 
 @Entity('orders')
 export class Order {
@@ -18,6 +20,9 @@ export class Order {
   @ManyToOne(() => User, (user) => user.orders)
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @OneToMany(() => TossPayment, (payment) => payment.order)
+  payments: TossPayment[];
 
   @ManyToOne(() => Product, (product) => product.orders)
   @JoinColumn({ name: 'product_id' })

@@ -82,8 +82,6 @@ export class AuthService {
       userId = newUser.id;
     }
 
-    log.debug(`JWT_SECRET, [${this.configService.get('JWT_SECRET')}]`);
-
     // 4. JWT 발급
     const accessToken = this.jwtService.sign(
       { data: userId },
