@@ -11,11 +11,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from 'src/auth/auth.module';
 import { LikesModule } from './likes/likes.module';
+import { S3Service } from 'src/common/service';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // 어디서든 import 없이 사용 가능
+      envFilePath: '.env',
     }),
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -46,7 +48,7 @@ import { LikesModule } from './likes/likes.module';
     LikesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
-  exports: [JwtModule],
+  providers: [AppService, S3Service],
+  exports: [JwtModule, S3Service],
 })
 export class AppModule {}

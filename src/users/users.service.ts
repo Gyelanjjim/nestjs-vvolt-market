@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -29,7 +33,7 @@ export class UsersService {
       address: '',
       latitude: 0,
       longitude: 0,
-      user_image: '',
+      userImage: '',
       description: '',
     });
 
@@ -179,13 +183,13 @@ export class UsersService {
     return result; // { existence: 1 } or { existence: 0 }
   }
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
+  // create(createUserDto: CreateUserDto) {
+  //   return 'This action adds a new user';
+  // }
 
-  findAll() {
-    return `This action returns all users`;
-  }
+  // findAll() {
+  //   return `This action returns all users`;
+  // }
 
   async findOne(userIdByToken: number, userId: number, lhd: string) {
     const elapsed = Date.now();
@@ -213,11 +217,20 @@ export class UsersService {
     };
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async updateUser(userId: number, updateData: UpdateUserDto, lhd: string) {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) {
+      log.error(`${lhd} failed. not found user. => userId [${userId}]`);
+      throw new NotFoundException('User not found');
+    }
+
+    Object.assign(user, updateData);
+    await this.userRepository.save(user);
+
+    return { message: 'USER_MODIFY_SUCCESS', user };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
+  // remove(id: number) {
+  //   return `This action removes a #${id} user`;
+  // }
 }

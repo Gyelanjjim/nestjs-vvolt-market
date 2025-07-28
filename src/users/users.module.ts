@@ -6,9 +6,14 @@ import { User } from 'src/users/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { Order } from 'src/orders/entities/order.entity';
 import { Follow } from 'src/users/entities/follow.entity';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Order, Follow]), JwtModule],
+  imports: [
+    TypeOrmModule.forFeature([User, Order, Follow]),
+    JwtModule,
+    CommonModule,
+  ],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],

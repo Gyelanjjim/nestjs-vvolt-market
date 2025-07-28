@@ -30,8 +30,8 @@ export class User {
   @Column('decimal', { precision: 11, scale: 8 })
   longitude: number;
 
-  @Column({ length: 50, nullable: true })
-  user_image: string;
+  @Column({ name: 'user_image', type: 'varchar', length: 512, nullable: true })
+  userImage: string;
 
   @Column({ length: 50 })
   nickname: string;
