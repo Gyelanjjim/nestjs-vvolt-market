@@ -8,6 +8,7 @@ import { Like } from 'src/likes/entities/like.entity';
 import { Review } from 'src/reviews/entities/review.entity';
 import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { S3Service } from 'src/common/service';
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { AuthModule } from 'src/auth/auth.module';
   ],
   exports: [TypeOrmModule],
   controllers: [ProductsController],
-  providers: [ProductsService],
+  providers: [ProductsService, S3Service],
 })
 export class ProductsModule {}

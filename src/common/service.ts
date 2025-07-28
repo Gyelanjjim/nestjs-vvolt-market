@@ -13,6 +13,7 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { S3Client } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs'; // commonJS 모듈을 ESModule 방식으로 쓰려면 "esModuleInterop": true 추가해야한다.
+import { S3MulterFile } from 'src/common/types';
 
 @Injectable()
 export class S3Service {
@@ -48,6 +49,10 @@ export class S3Service {
     const result = await upload.done();
     // @ts-ignore
     return result.Location; // 업로드된 public URL
+  }
+
+  async uploadFiles(files: Express.Multer.File[]): Promise<string[]> {
+    return Promise.all(files.map((file) => this.uploadFile(file)));
   }
 }
 
@@ -86,7 +91,7 @@ export function S3SingleInterceptor(field: string): Type<NestInterceptor> {
 }
 
 /**
- * 다중 파일 업로드용 데코레이터
+ * 다중 파일 S3 업로드용 인터셉터
  */
 export function S3MultipleInterceptor(
   field: string,
@@ -94,17 +99,30 @@ export function S3MultipleInterceptor(
 ): Type<NestInterceptor> {
   @Injectable()
   class MixinInterceptor implements NestInterceptor {
-    private readonly interceptor: NestInterceptor;
+    private readonly localInterceptor: NestInterceptor;
 
-    constructor() {
+    constructor(private readonly s3Service: S3Service) {
       const InterceptorClass = FilesInterceptor(field, maxCount, {
-        storage: multer.memoryStorage(), // 디스크 저장 없이 버퍼에 저장
+        storage: multer.memoryStorage(),
       });
-      this.interceptor = new InterceptorClass();
+      this.localInterceptor = new InterceptorClass(); // multer 인터셉터 인스턴스
     }
 
-    intercept(context: ExecutionContext, next: CallHandler) {
-      return this.interceptor.intercept(context, next);
+    async intercept(context: ExecutionContext, next: CallHandler) {
+      // 먼저 multer 메모리 버퍼 처리
+      await this.localInterceptor.intercept(context, next);
+
+      const req = context.switchToHttp().getRequest();
+      const files = req.files as S3MulterFile[];
+
+      if (files && Array.isArray(files)) {
+        const locations = await this.s3Service.uploadFiles(files);
+        files.forEach((file, i) => {
+          file.location = locations[i];
+        });
+      }
+
+      return next.handle();
     }
   }
 
