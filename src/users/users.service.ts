@@ -10,7 +10,7 @@ import { User } from 'src/users/entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { SocialPlatform } from 'src/users/enums/social-platform.enum';
 import { Product } from 'src/products/entities/product.entity';
-import { Review } from 'src/reviews/entities/review.entity';
+import { Review } from 'src/review/entities/review.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Order } from 'src/orders/entities/order.entity';
 import { UserDetailDto } from 'src/users/dto/get-user-detail.dto';

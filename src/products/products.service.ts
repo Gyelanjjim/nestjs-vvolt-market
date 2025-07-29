@@ -14,7 +14,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { log } from 'src/common/logger.util';
 import { GetProductsQueryDto } from 'src/products/dto/get-product-query.dto';
-import { Review } from 'src/reviews/entities/review.entity';
+import { Review } from 'src/review/entities/review.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Follow } from 'src/follow/entities/follow.entity';
 
@@ -35,6 +35,9 @@ export class ProductsService {
 
     @InjectRepository(Like)
     private readonly likeRepo: Repository<Like>,
+
+    @InjectRepository(Category)
+    private readonly categoryRepo: Repository<Category>,
   ) {}
 
   async create(dto: CreateProductDto, userId: number, lhd: string) {
@@ -49,6 +52,12 @@ export class ProductsService {
       categoryId,
       imageUrl,
     } = dto;
+
+    const category = await this.categoryRepo.findOneBy({ id: categoryId });
+    if (!category) {
+      log.warn(`${lhd} failed. not found category. categoryId [${categoryId}]`);
+      throw new NotFoundException('해당 카테고리가 존재하지 않습니다.');
+    }
 
     const queryRunner = this.productRepo.manager.connection.createQueryRunner();
     await queryRunner.connect();
@@ -181,7 +190,7 @@ export class ProductsService {
     // 리뷰 정보
     const reviews = await this.reviewRepo.find({
       where: { product: { id: productId } },
-      select: ['user', 'content', 'rating'],
+      select: ['user', 'contents', 'rating'],
     });
 
     // 좋아요 여부

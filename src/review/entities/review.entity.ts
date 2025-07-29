@@ -5,6 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  OneToOne,
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Product } from 'src/products/entities/product.entity';
@@ -15,16 +16,16 @@ export class Review {
   id: number;
 
   @Column('text')
-  content: string;
+  contents: string;
 
-  @Column('int')
+  @Column({ type: 'int' })
   rating: number; // 예: 1~5점
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.reviews)
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Product)
+  @OneToOne(() => Product)
   @JoinColumn({ name: 'product_id' })
   product: Product;
 

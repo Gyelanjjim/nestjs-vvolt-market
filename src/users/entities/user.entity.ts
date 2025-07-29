@@ -12,6 +12,7 @@ import { Product } from 'src/products/entities/product.entity';
 import { Order } from 'src/orders/entities/order.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Follow } from 'src/follow/entities/follow.entity';
+import { Review } from 'src/review/entities/review.entity';
 
 @Entity()
 @Unique(['nickname'])
@@ -57,6 +58,9 @@ export class User {
 
   @OneToMany(() => Follow, (follow) => follow.followee)
   followers: Follow[];
+
+  @OneToMany(() => Review, (review) => review.user)
+  reviews: Review[];
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

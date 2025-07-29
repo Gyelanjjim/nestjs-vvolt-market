@@ -6,7 +6,6 @@ import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { CategoriesModule } from './categories/categories.module';
 import { OrdersModule } from './orders/orders.module';
-import { ReviewsModule } from './reviews/reviews.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from 'src/auth/auth.module';
@@ -14,6 +13,7 @@ import { LikesModule } from './likes/likes.module';
 import { S3Service } from 'src/common/service';
 import { TosspaymentModule } from './tosspayment/tosspayment.module';
 import { FollowModule } from './follow/follow.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -45,11 +45,11 @@ import { FollowModule } from './follow/follow.module';
     ProductsModule,
     CategoriesModule,
     OrdersModule,
-    ReviewsModule,
     AuthModule,
     LikesModule,
     TosspaymentModule,
     FollowModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],

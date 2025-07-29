@@ -7,11 +7,12 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { ProductImage } from './product-image.entity';
 import { Like } from 'src/likes/entities/like.entity';
-import { Review } from 'src/reviews/entities/review.entity';
+import { Review } from 'src/review/entities/review.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { ProductStatus } from 'src/products/enums/product-status.enum';
 import { Order } from 'src/orders/entities/order.entity';
@@ -62,8 +63,8 @@ export class Product {
   @OneToMany(() => Like, (like) => like.product)
   likes: Like[];
 
-  @OneToMany(() => Review, (review) => review.product)
-  reviews: Review[];
+  @OneToOne(() => Review, (review) => review.product)
+  review: Review;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
