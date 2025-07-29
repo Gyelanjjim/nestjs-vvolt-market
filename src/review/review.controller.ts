@@ -8,12 +8,15 @@ import {
   Delete,
   UseGuards,
   Request,
+  ParseIntPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { log } from 'src/common/logger.util';
+import { DeleteReviewDto } from 'src/review/dto/delete-review.dto';
 
 @Controller('review')
 export class ReviewController {
@@ -33,5 +36,41 @@ export class ReviewController {
 
     log.info(`${lhd} success.`);
     return { message: '리뷰 등록 성공' };
+  }
+
+  /**
+   * @desc 특정 유저의 리뷰 목록
+   * @returns
+   */
+  @Get(':userId')
+  async getReviews(@Param('userId', ParseIntPipe) userId: number) {
+    const lhd = `getReviews -`;
+    log.info(`${lhd} start.`);
+
+    const reviews = await this.reviewService.getReviewsByUser(userId, lhd);
+
+    log.info(`${lhd} success.`);
+    return { review_list: reviews };
+  }
+
+  /**
+   * @desc 리뷰 삭제
+   * @returns
+   */
+  @Delete(':reviewId')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  async deleteReview(
+    @Request() req,
+    @Param('reviewId', ParseIntPipe) reviewId: number,
+  ) {
+    const lhd = `deleteReview -`;
+    const userId = req.user.id;
+    log.info(`${lhd} start.`);
+
+    await this.reviewService.deleteReview(userId, reviewId, lhd);
+
+    log.info(`${lhd} success.`);
+    return { message: 'delete selected Reviews' };
   }
 }
