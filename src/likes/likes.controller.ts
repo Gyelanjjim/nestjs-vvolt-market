@@ -15,6 +15,7 @@ import { CreateLikeDto } from './dto/create-like.dto';
 import { UpdateLikeDto } from './dto/update-like.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { log } from 'src/common/logger.util';
+import { successResponse } from 'src/common/service';
 
 @Controller('likes')
 export class LikesController {
@@ -33,11 +34,14 @@ export class LikesController {
     const lhd = 'toggleLike -';
     const userId = req.user.id;
     log.info(`${lhd} start.`);
-    const result = await this.likesService.toggleLike(userId, productId, lhd);
 
-    return {
-      message: result === 'LIKED' ? '좋아요 등록 완료' : '좋아요 취소 완료',
-    };
+    const data = await this.likesService.toggleLike(userId, productId, lhd);
+
+    log.info(`${lhd} success.`);
+    return successResponse(
+      undefined,
+      data === 'LIKED' ? `Success create like` : `Success delete like`,
+    );
   }
 
   /**
@@ -49,24 +53,9 @@ export class LikesController {
     const lhd = 'getLikeByUser -';
     log.info(`${lhd} start.`);
 
-    const likes = await this.likesService.getLikesByUserId(userId);
+    const data = await this.likesService.getLikesByUserId(userId, lhd);
 
     log.info(`${lhd} success.`);
-    return { Likes_list: likes };
+    return successResponse(data);
   }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.likesService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateLikeDto: UpdateLikeDto) {
-  //   return this.likesService.update(+id, updateLikeDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.likesService.remove(+id);
-  // }
 }

@@ -17,6 +17,7 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { log } from 'src/common/logger.util';
 import { DeleteReviewDto } from 'src/review/dto/delete-review.dto';
+import { successResponse } from 'src/common/service';
 
 @Controller('review')
 export class ReviewController {
@@ -32,10 +33,14 @@ export class ReviewController {
     const userId = req.user.id;
     log.info(`${lhd} start.`);
 
-    await this.reviewService.createReview(userId, createReviewDto, lhd);
+    const data = await this.reviewService.createReview(
+      userId,
+      createReviewDto,
+      lhd,
+    );
 
     log.info(`${lhd} success.`);
-    return { message: '리뷰 등록 성공' };
+    return successResponse(data);
   }
 
   /**
@@ -47,10 +52,10 @@ export class ReviewController {
     const lhd = `getReviews -`;
     log.info(`${lhd} start.`);
 
-    const reviews = await this.reviewService.getReviewsByUser(userId, lhd);
+    const data = await this.reviewService.getReviewsByUser(userId, lhd);
 
     log.info(`${lhd} success.`);
-    return { review_list: reviews };
+    return successResponse(data);
   }
 
   /**
@@ -71,6 +76,6 @@ export class ReviewController {
     await this.reviewService.deleteReview(userId, reviewId, lhd);
 
     log.info(`${lhd} success.`);
-    return { message: 'delete selected Reviews' };
+    return successResponse();
   }
 }

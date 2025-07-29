@@ -15,6 +15,7 @@ import { CreateFollowDto } from './dto/create-follow.dto';
 import { UpdateFollowDto } from './dto/update-follow.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { log } from 'src/common/logger.util';
+import { successResponse } from 'src/common/service';
 
 @Controller('follow')
 export class FollowController {
@@ -33,14 +34,18 @@ export class FollowController {
     const lhd = `toggleFollow -`;
     const { id: followerId } = req.user;
     log.info(`${lhd} start.`);
-    const result = await this.followService.toggleFollow(
+
+    const data = await this.followService.toggleFollow(
       followerId,
       followeeId,
       lhd,
     );
-    return {
-      message: result.followed ? '팔로우 성공' : '언팔로우 성공',
-    };
+
+    log.info(`${lhd} success.`);
+    return successResponse(
+      null,
+      data.followed ? `Success follow` : `Success unfollow`,
+    );
   }
 
   /**
@@ -51,8 +56,10 @@ export class FollowController {
   async getFollowingList(@Param('userId', ParseIntPipe) userId: number) {
     const lhd = `listFollowing -`;
     log.info(`${lhd} start.`);
-    const followees = await this.followService.getFollowingList(userId);
+
+    const data = await this.followService.getFollowingList(userId, lhd);
+
     log.info(`${lhd} success.`);
-    return followees;
+    return successResponse(data);
   }
 }

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { ErrorCode } from 'src/common/error-code.enum';
 import { log } from 'src/common/logger.util';
 import { UsersService } from 'src/users/users.service';
 
@@ -24,7 +25,10 @@ export class JwtAuthGuard implements CanActivate {
 
     if (!authHeader) {
       log.error(`${lhd} failed. not found header [authorization].`);
-      throw new UnauthorizedException('Access token required');
+      throw new UnauthorizedException({
+        message: 'Access token required',
+        code: ErrorCode.UNAUTHORIZED,
+      });
     }
 
     let token = '';
@@ -32,7 +36,10 @@ export class JwtAuthGuard implements CanActivate {
       token = authHeader.slice(7);
     } else {
       log.error(`${lhd} failed. Bearer type required.`);
-      throw new UnauthorizedException('Invalid access token type');
+      throw new UnauthorizedException({
+        message: 'Invalid access token type',
+        code: ErrorCode.UNAUTHORIZED,
+      });
     }
 
     try {
@@ -42,11 +49,21 @@ export class JwtAuthGuard implements CanActivate {
       // log.debug(`${lhd} payload.data [${JSON.stringify(payload.data)}]`);
 
       const user = await this.usersService.getUserById(payload.data);
-      if (!user) throw new UnauthorizedException('Invalid user');
+      if (!user) {
+        log.error(`${lhd} failed. not found user by payload.data`);
+        throw new UnauthorizedException({
+          message: 'Invalid user',
+          code: ErrorCode.UNAUTHORIZED,
+        });
+      }
       req.user = user;
       return true;
     } catch (err) {
-      throw new UnauthorizedException('Invalid token');
+      log.error(`${lhd} failed. invalid token. err [${JSON.stringify(err)}]`);
+      throw new UnauthorizedException({
+        message: 'Invalid token',
+        code: ErrorCode.UNAUTHORIZED,
+      });
     }
   }
 }

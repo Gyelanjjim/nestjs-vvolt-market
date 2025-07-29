@@ -14,6 +14,8 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs'; // commonJS 모듈을 ESModule 방식으로 쓰려면 "esModuleInterop": true 추가해야한다.
 import { S3MulterFile } from 'src/common/types';
+import { BaseResponseDto } from 'src/common/dto/common.dto';
+import { ErrorCode } from 'src/common/error-code.enum';
 
 @Injectable()
 export class S3Service {
@@ -34,7 +36,7 @@ export class S3Service {
     const uuid = uuidv4().replace(/-/g, ''); // 하이픈 제거된 UUID
     const key = `uploads/${today}/${uuid}`;
 
-    console.log(`today [${today}] uuid [${uuid}] key [${key}]`);
+    // console.log(`today [${today}] uuid [${uuid}] key [${key}]`);
 
     const upload = new Upload({
       client: this.s3Client, // ✅ v3 전용 client
@@ -127,6 +129,18 @@ export function S3MultipleInterceptor(
   }
 
   return mixin(MixinInterceptor);
+}
+
+export function successResponse<T>(
+  data?: T,
+  message = 'Success',
+  code = ErrorCode.SUCCESS,
+): BaseResponseDto<T> {
+  return {
+    code,
+    message,
+    ...(data !== undefined && { data }),
+  };
 }
 
 export function getCurrentTime(localeTime: number = 0): string {

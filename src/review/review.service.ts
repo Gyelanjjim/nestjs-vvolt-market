@@ -12,6 +12,7 @@ import { Repository } from 'typeorm';
 import { Product } from 'src/products/entities/product.entity';
 import { User } from 'src/users/entities/user.entity';
 import { log } from 'src/common/logger.util';
+import { ErrorCode } from 'src/common/error-code.enum';
 
 @Injectable()
 export class ReviewService {
@@ -40,14 +41,20 @@ export class ReviewService {
       log.warn(
         `${lhd} failed. already reviewed. productId [${productId}], userId [${userId}]`,
       );
-      throw new ConflictException('리뷰는 한 번만 등록할 수 있습니다.');
+      throw new ConflictException({
+        message: `Duplicate review.`,
+        code: ErrorCode.DUPLICATED_RESOURCE,
+      });
     }
 
     // check: 상품id 유효성
     const product = await this.productRepo.findOneBy({ id: productId });
     if (!product) {
       log.warn(`${lhd} failed. not found product. productId [${productId}]`);
-      throw new NotFoundException('해당 상품이 존재하지 않습니다.');
+      throw new NotFoundException({
+        message: `Not found product. productId [${productId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
     }
 
     const review = this.reviewRepo.create({
@@ -65,7 +72,10 @@ export class ReviewService {
     const user = await this.userRepo.findOneBy({ id: userId });
     if (!user) {
       log.warn(`${lhd} failed. not found user. userId [${userId}]`);
-      throw new NotFoundException('해당 유저가 존재하지 않습니다.');
+      throw new NotFoundException({
+        message: `Not found user. userId [${userId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
     }
 
     return await this.reviewRepo
@@ -74,6 +84,7 @@ export class ReviewService {
       .leftJoin('review.user', 'user')
       .where('product.seller = :userId', { userId })
       .select([
+        'review.id AS reviewId',
         'product.id AS productId',
         'user.id AS buyerId',
         'review.contents AS reviewContent',
@@ -96,12 +107,18 @@ export class ReviewService {
 
     if (!review) {
       log.warn(`${lhd} failed. not foumd review. => reviewId [${reviewId}]`);
-      throw new NotFoundException('리뷰가 존재하지 않습니다.');
+      throw new NotFoundException({
+        message: `Not found review. reviewId [${reviewId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
     }
 
     if (review.user.id !== userId) {
       log.warn(`${lhd} failed. permission denied. => userId [${userId}]`);
-      throw new ForbiddenException('리뷰를 삭제할 권한이 없습니다.');
+      throw new ForbiddenException({
+        message: `Permisson denied.`,
+        code: ErrorCode.FORBIDDEN,
+      });
     }
 
     const result = await this.reviewRepo.delete({
@@ -110,7 +127,10 @@ export class ReviewService {
 
     if (result.affected === 0) {
       log.warn(`${lhd} failed. no review to delete`);
-      throw new NotFoundException('삭제할 리뷰가 없습니다.');
+      throw new NotFoundException({
+        message: `Not found review. reviewId [${reviewId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
     }
   }
 }

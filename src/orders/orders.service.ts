@@ -6,6 +6,7 @@ import { Order } from 'src/orders/entities/order.entity';
 import { DataSource, Repository } from 'typeorm';
 import { Product } from 'src/products/entities/product.entity';
 import { log } from 'src/common/logger.util';
+import { ErrorCode } from 'src/common/error-code.enum';
 
 @Injectable()
 export class OrdersService {
@@ -48,7 +49,10 @@ export class OrdersService {
       return result;
     } catch (err) {
       log.error(`${lhd} failed. error [${JSON.stringify(err)}]`);
-      throw new InternalServerErrorException('주문 목록 조회 실패');
+      throw new InternalServerErrorException({
+        message: 'Failed to list orders',
+        code: ErrorCode.INTERNAL_ERROR,
+      });
     }
   }
 

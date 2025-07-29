@@ -7,6 +7,7 @@ import { LoginDto } from 'src/auth/dto/login.dto';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { log } from 'src/common/logger.util';
+import { ErrorCode } from 'src/common/error-code.enum';
 
 @Injectable()
 export class AuthService {
@@ -16,9 +17,15 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto, lhd: string) {
     const user = await this.usersService.findBySocialId(dto.socialId);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    if (!user) {
+      log.error(`${lhd} not found user. => socialId [${dto.socialId}]`);
+      throw new UnauthorizedException({
+        message: 'Invalid credentials',
+        code: ErrorCode.UNAUTHORIZED,
+      });
+    }
 
     const payload = { data: user.id };
     const token = this.jwtService.sign(payload, {
@@ -92,25 +99,5 @@ export class AuthService {
     );
 
     return { accessToken, isMember };
-  }
-
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
-
-  findAll() {
-    return `This action returns all auth`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
   }
 }

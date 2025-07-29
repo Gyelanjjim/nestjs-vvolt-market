@@ -14,6 +14,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { log } from 'src/common/logger.util';
+import { successResponse } from 'src/common/service';
 
 @Controller('orders')
 export class OrdersController {
@@ -27,6 +28,8 @@ export class OrdersController {
     log.info(`${lhd} start.`);
 
     const data = await this.ordersService.getMyOrders(userId, lhd);
-    return data;
+
+    log.info(`${lhd} success.`);
+    return successResponse(data);
   }
 }

@@ -7,10 +7,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { Order } from 'src/orders/entities/order.entity';
 import { CommonModule } from 'src/common/common.module';
 import { Follow } from 'src/follow/entities/follow.entity';
+import { Review } from 'src/review/entities/review.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Order, Follow]),
+    TypeOrmModule.forFeature([User, Order, Follow, Review]),
     JwtModule,
     CommonModule,
   ],

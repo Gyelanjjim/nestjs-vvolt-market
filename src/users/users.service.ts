@@ -1,5 +1,5 @@
 import {
-  BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -16,6 +16,7 @@ import { Order } from 'src/orders/entities/order.entity';
 import { UserDetailDto } from 'src/users/dto/get-user-detail.dto';
 import { log } from 'src/common/logger.util';
 import { Follow } from 'src/follow/entities/follow.entity';
+import { ErrorCode } from 'src/common/error-code.enum';
 
 @Injectable()
 export class UsersService {
@@ -40,10 +41,29 @@ export class UsersService {
     return this.userRepository.save(newUser);
   }
 
-  async createUserData(userId: number, dto: CreateUserDto): Promise<void> {
+  async createUserData(
+    userId: number,
+    dto: CreateUserDto,
+    lhd: string,
+  ): Promise<void> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) throw new BadRequestException('존재하지 않는 유저입니다');
-    if (user.nickname) throw new BadRequestException('이미 가입된 유저입니다');
+    if (!user) {
+      log.warn(`${lhd} failed. not found user. => userId [${userId}]`);
+      throw new NotFoundException({
+        message: `Not found user. userId [${userId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
+    }
+
+    if (user.nickname) {
+      log.warn(
+        `${lhd} failed. already existed user. => userId [${userId}] nickname [${user.nickname}]`,
+      );
+      throw new ConflictException({
+        message: `Duplicated user.`,
+        code: ErrorCode.DUPLICATED_RESOURCE,
+      });
+    }
 
     await this.userRepository.update(userId, {
       nickname: dto.nickname,
@@ -183,20 +203,17 @@ export class UsersService {
     return result; // { existence: 1 } or { existence: 0 }
   }
 
-  // create(createUserDto: CreateUserDto) {
-  //   return 'This action adds a new user';
-  // }
-
-  // findAll() {
-  //   return `This action returns all users`;
-  // }
-
   async findOne(userIdByToken: number, userId: number, lhd: string) {
     const elapsed = Date.now();
+    log.info(`-1-`);
     const isMyShop = userId == userIdByToken;
+    log.info(`-2-`);
     const shopInfo = (await this.getUserDetailById(userId)) || {};
+    log.info(`-3-`);
     const myInfo = await this.getUserDetailById(userIdByToken);
+    log.info(`-4-`);
     const isFollow = await this.getFollow(userIdByToken, userId);
+    log.info(`-5-`);
 
     log.info(
       `${lhd} success. find user info by userId [${userId}] and userIdByToken [${userIdByToken}] elapsed [${Date.now() - elapsed} ms]`,
@@ -220,17 +237,16 @@ export class UsersService {
   async updateUser(userId: number, updateData: UpdateUserDto, lhd: string) {
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
-      log.error(`${lhd} failed. not found user. => userId [${userId}]`);
-      throw new NotFoundException('User not found');
+      log.warn(`${lhd} failed. not found user. => userId [${userId}]`);
+      throw new NotFoundException({
+        message: `Not found user. userId [${userId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
     }
 
     Object.assign(user, updateData);
     await this.userRepository.save(user);
 
-    return { message: 'USER_MODIFY_SUCCESS', user };
+    return user;
   }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
 }

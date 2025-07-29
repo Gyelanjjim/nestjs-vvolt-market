@@ -7,6 +7,7 @@ import { Product } from 'src/products/entities/product.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { log } from 'src/common/logger.util';
+import { ErrorCode } from 'src/common/error-code.enum';
 
 @Injectable()
 export class LikesService {
@@ -27,9 +28,20 @@ export class LikesService {
     const user = await this.userRepo.findOneBy({ id: userId });
     const product = await this.productRepo.findOneBy({ id: productId });
 
-    if (!user || !product) {
-      log.warn(`${lhd} failed. not found user or product.`);
-      throw new NotFoundException('유저 또는 상품을 찾을 수 없습니다.');
+    if (!user) {
+      log.warn(`${lhd} failed. not found user. => userId [${userId}]`);
+      throw new NotFoundException({
+        message: `Not found user. userId [${userId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
+    }
+
+    if (!product) {
+      log.warn(`${lhd} failed. not found product. => productId [${productId}]`);
+      throw new NotFoundException({
+        message: `Not found product. productId [${productId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
     }
 
     const existingLike = await this.likeRepo.findOne({
@@ -38,19 +50,32 @@ export class LikesService {
 
     if (existingLike) {
       await this.likeRepo.remove(existingLike);
-      log.info(`${lhd} success. like removed.`);
+      log.info(
+        `${lhd} like removed. => userId [${userId}] productId [${productId}]`,
+      );
 
       return 'UNLIKED';
     } else {
       const like = this.likeRepo.create({ user, product });
       await this.likeRepo.save(like);
-      log.info(`${lhd} success. like created.`);
+      log.info(
+        `${lhd} like created. => userId [${userId}] productId [${productId}]`,
+      );
 
       return 'LIKED';
     }
   }
 
-  async getLikesByUserId(userId: number) {
+  async getLikesByUserId(userId: number, lhd: string) {
+    const user = await this.userRepo.findOneBy({ id: userId });
+    if (!user) {
+      log.warn(`${lhd} failed. not found user. => userId [${userId}]`);
+      throw new NotFoundException({
+        message: `Not found user. userId [${userId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
+    }
+
     return await this.likeRepo
       .createQueryBuilder('l')
       .innerJoin('l.product', 'p')
@@ -69,20 +94,4 @@ export class LikesService {
       .addGroupBy('pi.image_url')
       .getRawMany();
   }
-
-  // findAll() {
-  //   return `This action returns all likes`;
-  // }
-
-  // findOne(id: number) {
-  //   return `This action returns a #${id} like`;
-  // }
-
-  // update(id: number, updateLikeDto: UpdateLikeDto) {
-  //   return `This action updates a #${id} like`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} like`;
-  // }
 }

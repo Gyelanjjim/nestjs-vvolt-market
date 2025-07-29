@@ -1,0 +1,9 @@
+export enum ErrorCode {
+  DUPLICATED_RESOURCE = 'E409',
+  NOT_FOUND = 'E404',
+  UNAUTHORIZED = 'E401',
+  FORBIDDEN = 'E403',
+  BAD_REQUEST = 'E400',
+  INTERNAL_ERROR = 'E500',
+  SUCCESS = 'S200',
+}

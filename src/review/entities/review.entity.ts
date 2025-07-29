@@ -10,7 +10,7 @@ import {
 import { User } from 'src/users/entities/user.entity';
 import { Product } from 'src/products/entities/product.entity';
 
-@Entity('reviews')
+@Entity('review')
 export class Review {
   @PrimaryGeneratedColumn()
   id: number;

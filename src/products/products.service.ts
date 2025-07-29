@@ -17,6 +17,7 @@ import { GetProductsQueryDto } from 'src/products/dto/get-product-query.dto';
 import { Review } from 'src/review/entities/review.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Follow } from 'src/follow/entities/follow.entity';
+import { ErrorCode } from 'src/common/error-code.enum';
 
 @Injectable()
 export class ProductsService {
@@ -56,7 +57,10 @@ export class ProductsService {
     const category = await this.categoryRepo.findOneBy({ id: categoryId });
     if (!category) {
       log.warn(`${lhd} failed. not found category. categoryId [${categoryId}]`);
-      throw new NotFoundException('해당 카테고리가 존재하지 않습니다.');
+      throw new NotFoundException({
+        message: `Not found category. categoryId [${categoryId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
     }
 
     const queryRunner = this.productRepo.manager.connection.createQueryRunner();
@@ -96,13 +100,14 @@ export class ProductsService {
           .save(imageEntities);
       }
 
-      await queryRunner.commitTransaction();
-      log.info(`${lhd} success.`);
-      return { message: 'POST_SUCCESS' };
+      return await queryRunner.commitTransaction();
     } catch (err) {
       await queryRunner.rollbackTransaction();
       log.error(`${lhd} failed. error [${JSON.stringify(err)}]`);
-      throw new InternalServerErrorException('상품 생성 실패');
+      throw new InternalServerErrorException({
+        message: `Failed to create product`,
+        code: ErrorCode.INTERNAL_ERROR,
+      });
     } finally {
       await queryRunner.release();
     }
@@ -148,7 +153,7 @@ export class ProductsService {
     return products;
   }
 
-  async findOne(productId: number, userId: number) {
+  async findOne(productId: number, userId: number, lhd: string) {
     const product = await this.productRepo
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category')
@@ -174,7 +179,11 @@ export class ProductsService {
       .getOne();
 
     if (!product) {
-      throw new NotFoundException('상품을 찾을 수 없습니다');
+      log.warn(`${lhd} failed. not found product. => productId [${productId}]`);
+      throw new NotFoundException({
+        message: `Not found product. productId [${productId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
     }
 
     // 스토어의 총 상품 수
@@ -250,12 +259,18 @@ export class ProductsService {
 
     if (!product) {
       log.warn(`${lhd} failed. not found. => productId [${productId}]`);
-      throw new NotFoundException('상품을 찾을 수 없습니다');
+      throw new NotFoundException({
+        message: `Not found product. productId [${productId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
     }
 
     if (product.seller.id !== userId) {
       log.warn(`${lhd} failed. not authorized. => userId [${userId}]`);
-      throw new ForbiddenException('상품을 수정할 권한이 없습니다');
+      throw new ForbiddenException({
+        message: `Permisson denied.`,
+        code: ErrorCode.FORBIDDEN,
+      });
     }
 
     const queryRunner = this.productRepo.manager.connection.createQueryRunner();
@@ -332,11 +347,14 @@ export class ProductsService {
 
       await queryRunner.commitTransaction();
       log.info(`${lhd} success.`);
-      return { message: 'PRODUCT_UPDATE_SUCCESS' };
+      return;
     } catch (err) {
       await queryRunner.rollbackTransaction();
       log.error(`${lhd} failed. error [${JSON.stringify(err)}]`);
-      throw new InternalServerErrorException('상품 수정 실패');
+      throw new InternalServerErrorException({
+        message: `Failed to update product`,
+        code: ErrorCode.INTERNAL_ERROR,
+      });
     } finally {
       await queryRunner.release();
     }
@@ -350,18 +368,22 @@ export class ProductsService {
 
     if (!product) {
       log.warn(`${lhd} failed. not found product. => productId [${productId}]`);
-      throw new NotFoundException('상품을 찾을 수 없습니다');
+      throw new NotFoundException({
+        message: `Not found product. productId [${productId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
     }
 
     // 본인 상품만 삭제 가능
     if (product.seller.id !== userId) {
       log.warn(`${lhd} failed. not authorized. => userId [${userId}]`);
-      throw new ForbiddenException('상품을 삭제할 권한이 없습니다');
+      throw new ForbiddenException({
+        message: `Permisson denied.`,
+        code: ErrorCode.FORBIDDEN,
+      });
     }
 
-    await this.productRepo.delete(productId);
     log.info(`${lhd} success. deleted productId [${productId}]`);
-
-    return { message: 'PRODUCT_DELETE_SUCCESS' };
+    return await this.productRepo.delete(productId);
   }
 }

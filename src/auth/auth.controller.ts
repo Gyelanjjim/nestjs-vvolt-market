@@ -11,38 +11,40 @@ import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { LoginDto } from 'src/auth/dto/login.dto';
+import { log } from 'src/common/logger.util';
+import { successResponse } from 'src/common/service';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   * @desc 로그인
+   * @returns
+   */
   @Post('login')
-  login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+  async login(@Body() dto: LoginDto) {
+    const lhd = `signin -`;
+    log.info(`${lhd} start.`);
+
+    const data = await this.authService.login(dto, lhd);
+
+    log.info(`${lhd} success.`);
+    return successResponse(data);
   }
 
+  /**
+   * @desc 카카오 로그인
+   * @returns
+   */
   @Post('kakao-login')
   async kakaoLogin(@Body() body: { code: string }) {
-    return this.authService.kakaoLogin(body.code);
-  }
+    const lhd = `kakaoSignin -`;
+    log.info(`${lhd} start.`);
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
-  }
+    const data = await this.authService.kakaoLogin(body.code);
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+    log.info(`${lhd} success.`);
+    return successResponse(data);
   }
 }

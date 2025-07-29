@@ -13,6 +13,7 @@ import { TosspaymentService } from './tosspayment.service';
 import { CreateTossPaymentDto } from './dto/create-tosspayment.dto';
 import { UpdateTossPaymentDto } from './dto/update-tosspayment.dto';
 import { log } from 'src/common/logger.util';
+import { successResponse } from 'src/common/service';
 
 @Controller('tosspayment')
 export class TosspaymentController {
@@ -25,6 +26,8 @@ export class TosspaymentController {
     log.info(`${lhd} start.`);
 
     await this.tossPaymentService.confirm(dto);
-    return { message: 'Input Success!!!!' };
+
+    log.info(`${lhd} success.`);
+    return successResponse();
   }
 }

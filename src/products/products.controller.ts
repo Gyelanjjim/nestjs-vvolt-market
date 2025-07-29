@@ -20,9 +20,14 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { log } from 'src/common/logger.util';
-import { S3MultipleInterceptor, S3Service } from 'src/common/service';
+import {
+  S3MultipleInterceptor,
+  S3Service,
+  successResponse,
+} from 'src/common/service';
 import { S3MulterFile } from 'src/common/types';
 import { GetProductsQueryDto } from 'src/products/dto/get-product-query.dto';
+import { ErrorCode } from 'src/common/error-code.enum';
 
 @Controller('products')
 export class ProductsController {
@@ -37,11 +42,19 @@ export class ProductsController {
    */
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Request() req, @Body() createProductDto: CreateProductDto) {
+  async create(@Request() req, @Body() createProductDto: CreateProductDto) {
     const lhd = 'createProduct -';
+    const userId = req.user.id;
     log.info(`${lhd} start.`);
 
-    return this.productsService.create(createProductDto, req.user.id, lhd);
+    const data = await this.productsService.create(
+      createProductDto,
+      userId,
+      lhd,
+    );
+
+    log.info(`${lhd} success.`);
+    return successResponse(data);
   }
 
   /**
@@ -53,12 +66,20 @@ export class ProductsController {
   @UseInterceptors(S3MultipleInterceptor('image', 5))
   async uploadProductImages(@UploadedFiles() files: S3MulterFile[]) {
     const lhd = `uploadImages -`;
+    log.info(`${lhd} start.`);
+
     if (!files || files.length === 0) {
-      log.error(`${lhd} failed. no files uploaded`);
-      throw new BadRequestException('No files uploaded');
+      log.warn(`${lhd} failed. no files uploaded`);
+      throw new BadRequestException({
+        message: 'No files uploaded',
+        code: ErrorCode.BAD_REQUEST,
+      });
     }
 
-    return { image_url: files.map((f) => f.location) };
+    const data = { image_url: files.map((f) => f.location) };
+
+    log.info(`${lhd} success.`);
+    return successResponse(data);
   }
 
   /**
@@ -66,11 +87,14 @@ export class ProductsController {
    * @returns
    */
   @Get()
-  findAll(@Query() query: GetProductsQueryDto) {
+  async findAll(@Query() query: GetProductsQueryDto) {
     const lhd = 'listProduct -';
     log.info(`${lhd} start.`);
 
-    return this.productsService.findAll(query, lhd);
+    const data = await this.productsService.findAll(query, lhd);
+
+    log.info(`${lhd} success.`);
+    return successResponse(data);
   }
 
   /**
@@ -79,12 +103,18 @@ export class ProductsController {
    */
   @Get(':productId')
   @UseGuards(JwtAuthGuard)
-  findOne(@Request() req, @Param('productId', ParseIntPipe) productId: number) {
+  async findOne(
+    @Request() req,
+    @Param('productId', ParseIntPipe) productId: number,
+  ) {
     const lhd = 'readProduct -';
-    log.info(`${lhd} start.`);
     const userId = req.user.id;
+    log.info(`${lhd} start.`);
 
-    return this.productsService.findOne(productId, userId);
+    const data = await this.productsService.findOne(productId, userId, lhd);
+
+    log.info(`${lhd} success.`);
+    return successResponse(data);
   }
 
   /**
@@ -93,12 +123,14 @@ export class ProductsController {
    */
   @Get('store/:storeId')
   @UseGuards(JwtAuthGuard)
-  getStoreProducts(
-    @Param('storeId', ParseIntPipe) storeId: number,
-    @Request() req,
-  ) {
+  async getStoreProducts(@Param('storeId', ParseIntPipe) storeId: number) {
     const lhd = `getStoreProducts -`;
-    return this.productsService.findStoreProducts(storeId, lhd);
+    log.info(`${lhd} start.`);
+
+    const data = await this.productsService.findStoreProducts(storeId, lhd);
+
+    log.info(`${lhd} success.`);
+    return successResponse(data);
   }
 
   /**
@@ -107,20 +139,19 @@ export class ProductsController {
    */
   @Put(':productId')
   @UseGuards(JwtAuthGuard)
-  update(
+  async update(
     @Request() req,
     @Param('productId', ParseIntPipe) productId: number,
     @Body() updateProductDto: UpdateProductDto,
   ) {
     const lhd = 'updateProduct -';
+    const userId = req.user.id;
     log.info(`${lhd} start.`);
 
-    return this.productsService.update(
-      productId,
-      updateProductDto,
-      req.user.id,
-      lhd,
-    );
+    await this.productsService.update(productId, updateProductDto, userId, lhd);
+
+    log.info(`${lhd} success.`);
+    return successResponse();
   }
 
   /**
@@ -129,10 +160,17 @@ export class ProductsController {
    */
   @Delete(':productId')
   @UseGuards(JwtAuthGuard)
-  remove(@Request() req, @Param('productId', ParseIntPipe) productId: number) {
+  async remove(
+    @Request() req,
+    @Param('productId', ParseIntPipe) productId: number,
+  ) {
     const lhd = 'deleteProduct -';
+    const userId = req.user.id;
     log.info(`${lhd} start.`);
 
-    return this.productsService.remove(productId, req.user.id, lhd);
+    await this.productsService.remove(productId, userId, lhd);
+
+    log.info(`${lhd} success.`);
+    return successResponse();
   }
 }
