@@ -64,7 +64,7 @@ export class Product {
   likes: Like[];
 
   @OneToOne(() => Review, (review) => review.product)
-  review: Review;
+  reviews: Review;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

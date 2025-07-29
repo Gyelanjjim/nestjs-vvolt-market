@@ -205,15 +205,10 @@ export class UsersService {
 
   async findOne(userIdByToken: number, userId: number, lhd: string) {
     const elapsed = Date.now();
-    log.info(`-1-`);
     const isMyShop = userId == userIdByToken;
-    log.info(`-2-`);
     const shopInfo = (await this.getUserDetailById(userId)) || {};
-    log.info(`-3-`);
     const myInfo = await this.getUserDetailById(userIdByToken);
-    log.info(`-4-`);
     const isFollow = await this.getFollow(userIdByToken, userId);
-    log.info(`-5-`);
 
     log.info(
       `${lhd} success. find user info by userId [${userId}] and userIdByToken [${userIdByToken}] elapsed [${Date.now() - elapsed} ms]`,
