@@ -25,10 +25,6 @@ import { BaseResponseDto } from 'src/common/dto/common.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  /**
-   * @desc 카카오 로그인
-   * @returns
-   */
   @Post('kakao-login')
   @ApiOperation({
     summary: '카카오 로그인',

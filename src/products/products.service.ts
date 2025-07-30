@@ -148,7 +148,6 @@ export class ProductsService {
     }
 
     const products = await qb.getMany();
-    log.info(`${lhd} success.`);
 
     return products;
   }

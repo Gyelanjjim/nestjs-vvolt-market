@@ -10,6 +10,8 @@ import {
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { log } from 'src/common/logger.util';
+import { successResponse } from 'src/common/service';
 
 @Controller('categories')
 export class CategoriesController {
@@ -20,10 +22,16 @@ export class CategoriesController {
   //   return this.categoriesService.create(createCategoryDto);
   // }
 
-  // @Get()
-  // findAll() {
-  //   return this.categoriesService.findAll();
-  // }
+  @Get()
+  async findAll() {
+    const lhd = 'listCategories -';
+    log.info(`${lhd} start.`);
+
+    const data = await this.categoriesService.findAll(lhd);
+
+    log.info(`${lhd} success.`);
+    return successResponse(data);
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {
