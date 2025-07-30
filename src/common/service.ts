@@ -59,7 +59,7 @@ export class S3Service {
 }
 
 /**
- * 단일 파일 업로드용 데코레이터
+ * 단일 파일 업로드용 인터셉터
  */
 export function S3SingleInterceptor(field: string): Type<NestInterceptor> {
   @Injectable()
@@ -69,6 +69,9 @@ export function S3SingleInterceptor(field: string): Type<NestInterceptor> {
     constructor(private readonly s3Service: S3Service) {
       const InterceptorClass = FileInterceptor(field, {
         storage: multer.memoryStorage(),
+        limits: {
+          fileSize: 1024 * 1024, // ✅ 1MB 제한
+        },
       });
       this.localInterceptor = new InterceptorClass(); // ✅ 인스턴스 생성
     }
@@ -106,6 +109,9 @@ export function S3MultipleInterceptor(
     constructor(private readonly s3Service: S3Service) {
       const InterceptorClass = FilesInterceptor(field, maxCount, {
         storage: multer.memoryStorage(),
+        limits: {
+          fileSize: 1024 * 1024, // ✅ 1MB 제한
+        },
       });
       this.localInterceptor = new InterceptorClass(); // multer 인터셉터 인스턴스
     }

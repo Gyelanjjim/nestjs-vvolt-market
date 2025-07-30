@@ -8,6 +8,8 @@ import {
 import { Request, Response } from 'express';
 import { ErrorCode } from './error-code.enum';
 import { log } from 'src/common/logger.util';
+import { MulterError } from 'multer';
+import { successResponse } from 'src/common/service';
 
 @Catch()
 export class GlobalHttpExceptionFilter implements ExceptionFilter {
@@ -39,6 +41,17 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
           404: ErrorCode.NOT_FOUND,
           409: ErrorCode.DUPLICATED_RESOURCE,
         }[status] || ErrorCode.INTERNAL_ERROR;
+    }
+
+    // ✅ multer file too large
+    if (
+      exception instanceof MulterError &&
+      exception.code === 'LIMIT_FILE_SIZE'
+    ) {
+      return response.status(400).json({
+        code: 'E413',
+        message: 'File size must not exceed 1MB.',
+      });
     }
 
     response.status(status).json({
