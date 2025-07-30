@@ -39,7 +39,7 @@ export class UsersService {
       description: '',
     });
 
-    return this.userRepository.save(newUser);
+    return await this.userRepository.save(newUser);
   }
 
   async createUserData(
@@ -75,11 +75,13 @@ export class UsersService {
   }
 
   async getUserById(id: number): Promise<User | null> {
-    return this.userRepository.findOne({ where: { id } });
+    return await this.userRepository.findOne({ where: { id } });
   }
 
   async findBySocialId(socialId: string): Promise<User | null> {
-    return this.userRepository.findOne({ where: { social_id: socialId } });
+    return await this.userRepository.findOne({
+      where: { social_id: socialId },
+    });
   }
 
   async getUserDetailById(userId: number): Promise<UserDetailDto> {
