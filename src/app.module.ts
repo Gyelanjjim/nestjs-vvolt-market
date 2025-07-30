@@ -37,7 +37,7 @@ import { ReviewModule } from './review/review.module';
         username: config.get('DB_USER'),
         password: config.get('DB_PASS'),
         database: config.get('DB_NAME'),
-        synchronize: true,
+        synchronize: config.get('TYPEORM_SYNCHRONIZE'),
         autoLoadEntities: true,
       }),
     }),
