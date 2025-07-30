@@ -28,6 +28,9 @@ export class ProductsService {
     @InjectRepository(ProductImage)
     private readonly productImageRepo: Repository<ProductImage>,
 
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
+
     @InjectRepository(Follow)
     private readonly followRepo: Repository<Follow>,
 
@@ -221,6 +224,15 @@ export class ProductsService {
   }
 
   async findStoreProducts(storeId: number, lhd: string) {
+    const store = await this.userRepo.findOne({ where: { id: storeId } });
+    if (!store) {
+      log.warn(`${lhd} failed. not found. => storeId [${storeId}]`);
+      throw new NotFoundException({
+        message: `Not found store. storeId [${storeId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
+    }
+
     const products = await this.productRepo
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category')

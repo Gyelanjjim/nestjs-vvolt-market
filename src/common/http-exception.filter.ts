@@ -45,10 +45,12 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
 
     // ✅ multer file too large
     if (
-      exception instanceof MulterError &&
-      exception.code === 'LIMIT_FILE_SIZE'
+      (exception instanceof MulterError &&
+        exception.code === 'LIMIT_FILE_SIZE') ||
+      (exception instanceof Error &&
+        exception.message?.toLowerCase().includes('file too large'))
     ) {
-      return response.status(400).json({
+      return response.status(413).json({
         code: 'E413',
         message: 'File size must not exceed 1MB.',
       });

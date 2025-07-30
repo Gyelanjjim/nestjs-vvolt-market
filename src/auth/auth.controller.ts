@@ -31,7 +31,7 @@ export class AuthController {
     description:
       '카카오 로그인 후 콜백된 code 로 액세스토큰과 가입여부를 응답받습니다',
   })
-  @ApiBody({ type: LoginDto })
+  @ApiBody({ type: LoginDto, description: '카카오 로그인에 필요한 정보' })
   @ApiResponse({
     status: 200,
     description: '성공',

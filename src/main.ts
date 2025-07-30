@@ -4,6 +4,7 @@ import { GlobalHttpExceptionFilter } from 'src/common/http-exception.filter';
 import { ConfigService } from '@nestjs/config';
 import { log } from 'src/common/logger.util';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +13,10 @@ async function bootstrap() {
   app.enableCors({
     origin: '*',
   });
+
+  // request body 제한 해제 (Express 자체 제한을 피함)
+  app.use(json({ limit: '10mb' }));
+  app.use(urlencoded({ limit: '10mb', extended: true }));
 
   // Swagger API 문서 설정
   const swaggerConfig = new DocumentBuilder()

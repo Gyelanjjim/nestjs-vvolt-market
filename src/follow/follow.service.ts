@@ -22,6 +22,17 @@ export class FollowService {
     followeeId: number,
     lhd: string,
   ): Promise<{ followed: boolean }> {
+    const followee = await this.userRepo.findOne({ where: { id: followeeId } });
+    if (!followee) {
+      log.warn(
+        `${lhd} failed. not found user by followeeId. => followeeId [${followeeId}]`,
+      );
+      throw new NotFoundException({
+        message: `Not found user. followeeId [${followeeId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
+    }
+
     const existing = await this.followRepo.findOne({
       where: {
         follower: { id: followerId },
