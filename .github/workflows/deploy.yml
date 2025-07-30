@@ -33,6 +33,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
             cd ~/nestjs-vvolt-market &&
             git pull origin main &&
-            docker-compose -f docker-compose.prod.yaml down &&
-            docker-compose -f docker-compose.prod.yaml up -d --build
+            docker compose -f docker-compose.prod.yaml down &&
+            docker compose -f docker-compose.prod.yaml up -d --build
           '
