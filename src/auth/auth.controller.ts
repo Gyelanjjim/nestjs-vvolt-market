@@ -61,7 +61,7 @@ export class AuthController {
     const lhd = `kakaoSignin -`;
     log.info(`${lhd} start.`);
 
-    const data = await this.authService.kakaoLogin(body.code);
+    const data = await this.authService.kakaoLogin(body.code, lhd);
 
     log.info(`${lhd} success.`);
     return successResponse(data);

@@ -26,10 +26,11 @@ export class UsersService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async createSocialUser(socialId: string): Promise<User> {
+  async createSocialUser(socialId: string, kakaoNick: string): Promise<User> {
     const newUser = this.userRepository.create({
       social_id: socialId,
       social_platform_id: SocialPlatform.KAKAO,
+      name: kakaoNick,
       nickname: '',
       address: '',
       latitude: 0,

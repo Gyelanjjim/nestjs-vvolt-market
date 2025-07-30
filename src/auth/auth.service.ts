@@ -3,6 +3,7 @@ import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
+import { log } from 'src/common/logger.util';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,7 @@ export class AuthService {
 
   async kakaoLogin(
     code: string,
+    lhd: string,
   ): Promise<{ accessToken: string; isMember: boolean }> {
     const clientId = this.configService.get<string>('KAKAO_CLIENT_ID');
     const clientSecret = this.configService.get<string>('KAKAO_CLIENT_SECRET');
@@ -51,6 +53,8 @@ export class AuthService {
     );
 
     const kakaoId = String(userRes.data.id);
+    const kakaoNick = String(userRes.data.kakao_account.profile.nickname);
+    log.debug(`${lhd} user [${JSON.stringify(userRes.data)}]`);
 
     // 3. 유저 조회 및 없으면 생성
     const existingUser = await this.usersService.findBySocialId(kakaoId);
@@ -61,7 +65,10 @@ export class AuthService {
       isMember = true;
       userId = existingUser.id;
     } else {
-      const newUser = await this.usersService.createSocialUser(kakaoId);
+      const newUser = await this.usersService.createSocialUser(
+        kakaoId,
+        kakaoNick,
+      );
       userId = newUser.id;
     }
 

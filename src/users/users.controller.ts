@@ -18,15 +18,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { log } from 'src/common/logger.util';
-import {
-  S3Service,
-  S3SingleInterceptor,
-  successResponse,
-} from 'src/common/service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ConfigService } from '@nestjs/config';
+import { S3SingleInterceptor, successResponse } from 'src/common/service';
 import { S3MulterFile } from 'src/common/types';
-import { ErrorCode } from 'src/common/error-code.enum';
 import {
   ApiBody,
   ApiOperation,
