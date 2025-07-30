@@ -16,7 +16,7 @@ services:
   api:
     build: .
     ports:
-      - '${PORT}:3000'
+      - '${PORT}:10101'
     depends_on:
       - mysql
     restart: always
