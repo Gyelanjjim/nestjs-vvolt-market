@@ -28,14 +28,11 @@ jobs:
           echo "${{ secrets.EC2_KEY }}" | base64 -d > key.pem
           chmod 400 key.pem
 
-      - name: Create .env.production
-        run: |
-          echo "${{ secrets.ENV_PRODUCTION }}" > .env.production
-
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
             cd ~/nestjs-vvolt-market &&
+            echo "${{ secrets.ENV_PRODUCTION }}" | tr -d '\r' > .env.production &&
             git pull origin main &&
             docker compose -f docker-compose.prod.yml down &&
             docker compose -f docker-compose.prod.yml up -d --build
