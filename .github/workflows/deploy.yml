@@ -30,7 +30,7 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ secrets.EC2_HOST }} '
+          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
             cd ~/nestjs-vvolt-market &&
             git pull origin main &&
             docker-compose -f docker-compose.prod.yaml down &&
