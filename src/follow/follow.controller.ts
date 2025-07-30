@@ -41,11 +41,10 @@ export class FollowController {
       lhd,
     );
 
+    const message = data.followed ? `Success follow` : `Success unfollow`;
+
     log.info(`${lhd} success.`);
-    return successResponse(
-      null,
-      data.followed ? `Success follow` : `Success unfollow`,
-    );
+    return successResponse(undefined, message);
   }
 
   /**

@@ -17,25 +17,6 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async login(dto: LoginDto, lhd: string) {
-    const user = await this.usersService.findBySocialId(dto.socialId);
-    if (!user) {
-      log.error(`${lhd} not found user. => socialId [${dto.socialId}]`);
-      throw new UnauthorizedException({
-        message: 'Invalid credentials',
-        code: ErrorCode.UNAUTHORIZED,
-      });
-    }
-
-    const payload = { data: user.id };
-    const token = this.jwtService.sign(payload, {
-      secret: this.configService.get('JWT_SECRET'),
-      expiresIn: '1d',
-    });
-
-    return { accessToken: token };
-  }
-
   async kakaoLogin(
     code: string,
   ): Promise<{ accessToken: string; isMember: boolean }> {
