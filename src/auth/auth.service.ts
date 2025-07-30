@@ -1,13 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { LoginDto } from 'src/auth/dto/login.dto';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
-import { log } from 'src/common/logger.util';
-import { ErrorCode } from 'src/common/error-code.enum';
 
 @Injectable()
 export class AuthService {
