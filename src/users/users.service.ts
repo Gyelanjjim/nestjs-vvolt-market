@@ -85,11 +85,13 @@ export class UsersService {
     const result = await this.dataSource
       .getRepository(User)
       .createQueryBuilder('u')
+      .select([]) // ✅ 초기화: u.* 포함 안 되게 설정
       .leftJoin('u.products', 'p')
       .leftJoin('p.reviews', 'r')
       .leftJoin('p.orders', 'o')
       .leftJoin('u.likes', 'l')
       .addSelect('u.id', 'sellerId')
+      .addSelect('u.name', 'name')
       .addSelect('u.nickname', 'sellerName')
       .addSelect('u.user_image', 'sellerImg')
       .addSelect('u.description', 'sellerIntro')
@@ -97,8 +99,6 @@ export class UsersService {
       .addSelect('u.address', 'address')
       .addSelect('u.latitude', 'latitude')
       .addSelect('u.longitude', 'longitude')
-      .addSelect('u.social_id', 'social_id')
-      .addSelect('u.social_platform_id', 'social_platform_id')
       .addSelect(
         (subQuery) =>
           subQuery
@@ -178,7 +178,18 @@ export class UsersService {
       .where('u.id = :userId', { userId })
       .getRawOne();
 
-    return result;
+    return {
+      ...result,
+      name: result.name || result.nickname,
+      reviewNum: Number(result.reviewNum),
+      onSaleNum: Number(result.onSaleNum),
+      soldOutNum: Number(result.soldOutNum),
+      likeNum: Number(result.likeNum),
+      followingNum: Number(result.followingNum),
+      followNum: Number(result.followNum),
+      orderNum: Number(result.orderNum),
+      starAVG: result.starAVG === null ? 0 : Number(result.starAVG),
+    };
   }
 
   async getFollow(
@@ -204,15 +215,18 @@ export class UsersService {
   }
 
   async findOne(userIdByToken: number, userId: number, lhd: string) {
-    const elapsed = Date.now();
     const isMyShop = userId == userIdByToken;
-    const shopInfo = (await this.getUserDetailById(userId)) || {};
+    const shopInfo = await this.getUserDetailById(userId);
+    if (!shopInfo) {
+      log.warn(`${lhd} failed. not found user. userId [${userId}]`);
+      throw new NotFoundException({
+        message: `Not found user. userId [${userId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
+    }
     const myInfo = await this.getUserDetailById(userIdByToken);
     const isFollow = await this.getFollow(userIdByToken, userId);
 
-    log.info(
-      `${lhd} success. find user info by userId [${userId}] and userIdByToken [${userIdByToken}] elapsed [${Date.now() - elapsed} ms]`,
-    );
     return {
       isMyShop,
       isFollow,

@@ -58,6 +58,16 @@ export class ReviewController {
       },
     },
   })
+  @ApiResponse({
+    status: 409,
+    description: '중복 리뷰 등록 불가',
+    schema: {
+      example: {
+        code: 'E409',
+        message: 'Duplicate review',
+      },
+    },
+  })
   async createReview(@Request() req, @Body() createReviewDto: CreateReviewDto) {
     const lhd = `createReview -`;
     const userId = req.user.id;

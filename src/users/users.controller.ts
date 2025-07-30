@@ -110,40 +110,41 @@ export class UsersController {
         code: 'S200',
         message: 'Success',
         data: {
-          isMyShop: true,
-          myData: {
-            writerId: 1,
-            writerName: '계란찜2',
-            writerImg:
-              'https://vvolt-market.s3.ap-northeast-2.amazonaws.com/uploads/20250730/1f2089dfbe4b46b7ad66760a91cae4b1',
-            address: '서울시 송파구',
-            latitude: '37.49790000',
-            longitude: '127.02760000',
-          },
-          shopData: {
-            sellerId: 1,
-            address: '서울시 송파구',
-            latitude: '37.49790000',
-            longitude: '127.02760000',
-            u_user_image:
-              'https://vvolt-market.s3.ap-northeast-2.amazonaws.com/uploads/20250730/1f2089dfbe4b46b7ad66760a91cae4b1',
-            sellerName: '계란찜2',
-            sellerIntro: '안녕하세요 계란찜입니다',
-            social_id: '2826449058',
-            social_platform_id: '1',
-            sellerOpenDay: '2025-07-28T07:29:58.134Z',
-            u_updated_at: '2025-07-29T07:11:30.000Z',
-            sellerImg:
-              'https://vvolt-market.s3.ap-northeast-2.amazonaws.com/uploads/20250730/1f2089dfbe4b46b7ad66760a91cae4b1',
-            productId: [4],
-            starAVG: null,
-            reviewNum: '0',
-            onSaleNum: '1',
-            soldOutNum: '0',
-            likeNum: '1',
-            followingNum: '0',
-            followNum: '0',
-            orderNum: '0',
+          code: 'S200',
+          message: 'Success',
+          data: {
+            isMyShop: true,
+            myData: {
+              writerId: 1,
+              writerName: '계란찜2',
+              writerImg:
+                'https://vvolt-market.s3.ap-northeast-2.amazonaws.com/uploads/20250730/1f2089dfbe4b46b7ad66760a91cae4b1',
+              address: '서울시 송파구',
+              latitude: '37.49790000',
+              longitude: '127.02760000',
+              realName: 'song chuljin',
+            },
+            shopData: {
+              sellerId: 1,
+              address: '서울시 송파구',
+              latitude: '37.49790000',
+              longitude: '127.02760000',
+              sellerName: '계란찜2',
+              name: 'song chuljin',
+              sellerIntro: '안녕하세요 계란찜입니다',
+              sellerOpenDay: '2025-07-28T07:29:58.134Z',
+              sellerImg:
+                'https://vvolt-market.s3.ap-northeast-2.amazonaws.com/uploads/20250730/1f2089dfbe4b46b7ad66760a91cae4b1',
+              productId: [4],
+              starAVG: 0,
+              reviewNum: 0,
+              onSaleNum: 1,
+              soldOutNum: 0,
+              likeNum: 1,
+              followingNum: 0,
+              followNum: 0,
+              orderNum: 0,
+            },
           },
         },
       },
@@ -183,6 +184,10 @@ export class UsersController {
   @Put('me')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(S3SingleInterceptor('image'))
+  @ApiOperation({
+    summary: '내 정보 수정',
+    description: '내 정보를 수정합니다',
+  })
   @ApiBody({
     type: UpdateUserDto,
     description: '사용자 정보 수정에 필요한 정보',
