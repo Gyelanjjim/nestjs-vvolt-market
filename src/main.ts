@@ -35,13 +35,14 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT') || 3000;
+  const server = configService.get<number>('SERVER') || 'http://localhost';
 
   // 전역 예외 필터
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
 
   await app.listen(port);
-  log.info(`🚀 Application is running on: http://localhost:${port}`);
-  log.info(`📘 Swagger is available at: http://localhost:${port}/api`);
+  log.info(`🚀 Application is running on: ${server}:${port}`);
+  log.info(`📘 Swagger is available at: ${server}:${port}/api`);
 }
 
 bootstrap();
