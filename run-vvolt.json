@@ -1,0 +1,15 @@
+{
+  "apps": [
+    {
+      "name": "run-vvolt",
+      "script": "dist/main.js",
+      "exec_mode": "fork",
+      "instances": 1,
+      "watch": false,
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": 3000
+      }
+    }
+  ]
+}
