@@ -38,6 +38,7 @@ import { ReviewModule } from './review/review.module';
         password: config.get('DB_PASS'),
         database: config.get('DB_NAME'),
         synchronize: config.get('TYPEORM_SYNCHRONIZE'),
+        dropSchema: config.get('TYPEORM_DROP_SCHEMA'),
         autoLoadEntities: true,
       }),
     }),
