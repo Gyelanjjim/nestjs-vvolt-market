@@ -83,7 +83,7 @@ NestJS 기반으로 서버를 재구현하여 **API 응답 표준화**, **Docker
 ## 📀 데모
 
 - 📺 [시연 영상 링크](https://www.youtube.com/watch?v=UDNfYsCpGR4) _(예시)_
-- 📄 [API 문서](https://vvolt-market.kr/api) _(Swagger 기반)_
+- 📄 [API 문서](https://vvolt-market.kr/api-docs) _(Swagger 기반)_
 
 ---
 
