@@ -31,28 +31,29 @@ NestJS 기반으로 서버를 재구현하여 **API 응답 표준화**, **Docker
 
 ## 🔗 주요 API 엔드포인트
 
-| 메서드 | URI                    | 설명                                         |
-| ------ | ---------------------- | -------------------------------------------- |
-| POST   | `/auth/kakao-login`    | 카카오 소셜 로그인 (JWT 발급, 회원가입 여부) |
-| POST   | `/users/signup`        | 회원가입                                     |
-| GET    | `/users/:userId`       | 내 정보 및 특정 사용자 정보 조회             |
-| PUT    | `/users/me`            | 내 정보 수정                                 |
-| GET    | `/categories`          | 상품 카테고리 전체 조회                      |
-| POST   | `/products`            | 상품 등록                                    |
-| GET    | `/products`            | 상품 목록                                    |
-| POST   | `/products/image`      | 상품 이미지 업로드 (다중)                    |
-| GET    | `/products/:productId` | 상품 상세 조회                               |
-| PUT    | `/products/:productId` | 상품 정보 수정                               |
-| DELETE | `/products/:productId` | 상품 삭제                                    |
-| POST   | `/likes/:productId`    | 상품 찜(좋아요) 등록/삭제 (toggle)           |
-| POST   | `/tosspayment/confirm` | 토스 결제 승인                               |
-| GET    | `/likes/:userId`       | 특정 사용자가 찜한 상품 목록 조회            |
-| POST   | `/follow/:followeeId`  | 특정 사용자 팔로우/언팔로우 (toggle)         |
-| GET    | `/follow/:userId`      | 특정 사용자가 팔로우한 유저 목록             |
-| GET    | `/orders`              | 내 주문 목록 조회                            |
-| POST   | `/review`              | 후기 등록                                    |
-| GET    | `/review/:userId`      | 특정 사용자의 후기 목록                      |
-| DELETE | `/review/:reviewId`    | 내 후기 삭제                                 |
+| 메서드 | URI                        | 설명                                         |
+| ------ | -------------------------- | -------------------------------------------- |
+| GET    | `/api/health`              | 서버 상태 확인용                             |
+| POST   | `/api/auth/kakao-login`    | 카카오 소셜 로그인 (JWT 발급, 회원가입 여부) |
+| POST   | `/api/users/signup`        | 회원가입                                     |
+| GET    | `/api/users/:userId`       | 내 정보 및 특정 사용자 정보 조회             |
+| PUT    | `/api/users/me`            | 내 정보 수정                                 |
+| GET    | `/api/categories`          | 상품 카테고리 전체 조회                      |
+| POST   | `/api/products`            | 상품 등록                                    |
+| GET    | `/api/products`            | 상품 목록                                    |
+| POST   | `/api/products/image`      | 상품 이미지 업로드 (다중)                    |
+| GET    | `/api/products/:productId` | 상품 상세 조회                               |
+| PUT    | `/api/products/:productId` | 상품 정보 수정                               |
+| DELETE | `/api/products/:productId` | 상품 삭제                                    |
+| POST   | `/api/likes/:productId`    | 상품 찜(좋아요) 등록/삭제 (toggle)           |
+| POST   | `/api/tosspayment/confirm` | 토스 결제 승인                               |
+| GET    | `/api/likes/:userId`       | 특정 사용자가 찜한 상품 목록 조회            |
+| POST   | `/api/follow/:followeeId`  | 특정 사용자 팔로우/언팔로우 (toggle)         |
+| GET    | `/api/follow/:userId`      | 특정 사용자가 팔로우한 유저 목록             |
+| GET    | `/api/orders`              | 내 주문 목록 조회                            |
+| POST   | `/api/review`              | 후기 등록                                    |
+| GET    | `/api/review/:userId`      | 특정 사용자의 후기 목록                      |
+| DELETE | `/api/review/:reviewId`    | 내 후기 삭제                                 |
 
 ## ⚙️ 공통 모듈 설계
 

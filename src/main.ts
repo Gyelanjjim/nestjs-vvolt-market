@@ -8,12 +8,15 @@ import { json, urlencoded } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>('PORT') || 3000;
+  const server = configService.get<number>('SERVER') || 'http://localhost';
 
   // CORS 허용
   app.enableCors({
     origin: '*',
   });
-
+  app.setGlobalPrefix('api');
   // request body 제한 해제 (Express 자체 제한을 피함)
   app.use(json({ limit: '10mb' }));
   app.use(urlencoded({ limit: '10mb', extended: true }));
@@ -36,18 +39,14 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api', app, document); // http://localhost:<port>/api
-
-  const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT') || 3000;
-  const server = configService.get<number>('SERVER') || 'http://localhost';
+  SwaggerModule.setup('api-docs', app, document);
 
   // 전역 예외 필터
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
 
   await app.listen(port);
-  log.info(`🚀 Application is running on: ${server}:${port}`);
-  log.info(`📘 Swagger is available at: ${server}:${port}/api`);
+  log.info(`🚀 API is running on: ${server}:${port}/api`);
+  log.info(`📘 Swagger is available at: ${server}:${port}/api-docs`);
 }
 
 bootstrap();
