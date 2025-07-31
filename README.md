@@ -1,7 +1,7 @@
 # 🏭️ VVolt Market (NestJS)
 
 📆 **개발 기간**: 2025.07.23 ~ 2025.07.31 (1차 개발) <br/>
-🚀 **배포 주소**: [https://vvolt-market.kr](https://vvolt-market.kr)
+🚀 **배포 주소**: [https://vvolt-market.kr/api-docs](https://vvolt-market.kr/api-docs)
 
 ---
 
