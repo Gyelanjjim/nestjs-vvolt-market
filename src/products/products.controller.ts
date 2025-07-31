@@ -30,6 +30,7 @@ import { GetProductsQueryDto } from 'src/products/dto/get-product-query.dto';
 import { ErrorCode } from 'src/common/error-code.enum';
 import {
   ApiBody,
+  ApiConsumes,
   ApiOperation,
   ApiParam,
   ApiQuery,
@@ -92,6 +93,22 @@ export class ProductsController {
     summary: '상품 이미지 등록',
     description:
       '판매할 상품의 이미지를 등록합니다. 최대 5개까지 등록할 수 있습니다',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+          description: '업로드할 이미지 파일들 (최대 5개)',
+        },
+      },
+    },
   })
   @ApiResponse({
     status: 200,

@@ -19,7 +19,7 @@ export class TossPayment {
   @Column()
   paymentKey: string;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 
   @ManyToOne(() => Order, (order) => order.payments)

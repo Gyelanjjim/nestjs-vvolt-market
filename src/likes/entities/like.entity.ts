@@ -21,6 +21,6 @@ export class Like {
   @JoinColumn({ name: 'product_id' })
   product: Product;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 }

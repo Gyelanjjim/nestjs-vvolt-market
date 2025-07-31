@@ -22,6 +22,7 @@ import { S3SingleInterceptor, successResponse } from 'src/common/service';
 import { S3MulterFile } from 'src/common/types';
 import {
   ApiBody,
+  ApiConsumes,
   ApiOperation,
   ApiParam,
   ApiResponse,
@@ -181,9 +182,23 @@ export class UsersController {
     summary: '내 정보 수정',
     description: '내 정보를 수정합니다',
   })
+  @ApiConsumes('multipart/form-data')
   @ApiBody({
-    type: UpdateUserDto,
-    description: '사용자 정보 수정에 필요한 정보',
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          type: 'string',
+          format: 'binary',
+          description: '업로드할 프로필 이미지 (1개)',
+        },
+        nickname: { type: 'string', example: '계란찜2' },
+        address: { type: 'string', example: '서울시 송파구' },
+        latitude: { type: 'string', example: '37.4979' },
+        longitude: { type: 'string', example: '127.0276' },
+        description: { type: 'string', example: '안녕하세요 계란찜입니다' },
+      },
+    },
   })
   @ApiResponse({
     status: 200,

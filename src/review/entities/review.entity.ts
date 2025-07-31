@@ -25,10 +25,10 @@ export class Review {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @OneToOne(() => Product)
+  @OneToOne(() => Product, (product) => product.reviews)
   @JoinColumn({ name: 'product_id' })
   product: Product;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 }
