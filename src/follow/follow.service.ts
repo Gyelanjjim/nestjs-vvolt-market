@@ -81,4 +81,28 @@ export class FollowService {
       userImage: f.followee.userImage,
     }));
   }
+
+  async getFollowerList(userId: number, lhd: string): Promise<Partial<User>[]> {
+    // check: userId 유효성
+    const user = await this.userRepo.findOne({ where: { id: userId } });
+    if (!user) {
+      log.warn(`${lhd} failed. not found user. => userId [${userId}]`);
+      throw new NotFoundException({
+        message: `Not found user. userId [${userId}]`,
+        code: ErrorCode.NOT_FOUND,
+      });
+    }
+
+    const follows = await this.followRepo
+      .createQueryBuilder('f')
+      .leftJoinAndSelect('f.follower', 'follower')
+      .where('f.followee = :userId', { userId })
+      .getMany();
+
+    return follows.map((f) => ({
+      id: f.follower.id,
+      nickname: f.follower.nickname,
+      userImage: f.follower.userImage,
+    }));
+  }
 }

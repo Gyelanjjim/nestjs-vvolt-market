@@ -98,10 +98,10 @@ export class FollowController {
   }
 
   @ApiTags('Follow')
-  @Get(':userId')
+  @Get('/following/:userId')
   @ApiOperation({
-    summary: '팔로우 중인 사용자 목록',
-    description: '특정 사용자(userId)가 팔로우 중인 사용자 목록을 조회합니다.',
+    summary: '특정 사용자가 팔로잉하는 사용자 목록',
+    description: '특정 사용자(userId)의 팔로잉 목록을 조회합니다.',
   })
   @ApiParam({
     name: 'userId',
@@ -136,6 +136,50 @@ export class FollowController {
     log.info(`${lhd} start.`);
 
     const data = await this.followService.getFollowingList(userId, lhd);
+
+    log.info(`${lhd} success.`);
+    return successResponse(data);
+  }
+
+  @ApiTags('Follow')
+  @Get('follower/:userId')
+  @ApiOperation({
+    summary: '특정 사용자의 팔로워 목록',
+    description: '특정 사용자(userId)를 팔로우하는 사용자 목록을 조회합니다.',
+  })
+  @ApiParam({
+    name: 'userId',
+    type: Number,
+    required: true,
+    description: '목록 조회할 특정 사용자 id',
+    example: 42,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '목록 조회 성공',
+    schema: {
+      example: {
+        code: 'S200',
+        message: 'Success',
+        data: [],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: '목록 조회할 사용자를 찾을 수 없음',
+    schema: {
+      example: {
+        code: 'E404',
+        message: 'Not found user. userId [2]',
+      },
+    },
+  })
+  async getFollowMeList(@Param('userId', ParseIntPipe) userId: number) {
+    const lhd = 'listFollower -';
+    log.info(`${lhd} start.`);
+
+    const data = await this.followService.getFollowerList(userId, lhd);
 
     log.info(`${lhd} success.`);
     return successResponse(data);
