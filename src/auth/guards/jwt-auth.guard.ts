@@ -35,7 +35,9 @@ export class JwtAuthGuard implements CanActivate {
     if (authHeader.startsWith('Bearer ')) {
       token = authHeader.slice(7);
     } else {
-      log.error(`${lhd} failed. Bearer type required.`);
+      log.error(
+        `${lhd} failed. Bearer type required. authHeader [${authHeader}]`,
+      );
       throw new UnauthorizedException({
         message: 'Invalid access token type',
         code: ErrorCode.UNAUTHORIZED,
