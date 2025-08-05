@@ -16,7 +16,7 @@ export class AuthService {
   async kakaoLogin(
     code: string,
     lhd: string,
-  ): Promise<{ accessToken: string; isMember: boolean }> {
+  ): Promise<{ accessToken: string; isMember: boolean; userId: number }> {
     const clientId = this.configService.get<string>('KAKAO_CLIENT_ID');
     const clientSecret = this.configService.get<string>('KAKAO_CLIENT_SECRET');
     const redirectUri = this.configService.get<string>('KAKAO_REDIRECT_URI');
@@ -81,6 +81,6 @@ export class AuthService {
       },
     );
 
-    return { accessToken, isMember };
+    return { accessToken, isMember, userId };
   }
 }

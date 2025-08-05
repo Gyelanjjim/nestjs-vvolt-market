@@ -43,6 +43,7 @@ export class AuthController {
           accessToken:
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJpYXQiOjE3NTM4MDQzMzAAAAV4cCI6MTc1Mzg5MDczMH0.AUwWcw7i_VNHQAGHVG_J8ioDG9IZRjKmzEdx2naPLU4',
           isMember: true,
+          userId: 12,
         },
       },
     },
