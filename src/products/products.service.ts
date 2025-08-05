@@ -127,7 +127,7 @@ export class ProductsService {
         'product.id',
         'product.name',
         'product.price',
-        'product.created_at',
+        'product.createdAt',
         'product.location',
         'product.latitude',
         'product.longitude',
@@ -142,7 +142,7 @@ export class ProductsService {
     } else if (sort === 'pLow') {
       qb.orderBy('product.price', 'ASC');
     } else {
-      qb.orderBy('product.created_at', 'DESC'); // default
+      qb.orderBy('product.createdAt', 'DESC'); // default
     }
 
     // 필터 조건 (옵션)
@@ -151,6 +151,8 @@ export class ProductsService {
     }
 
     const products = await qb.getMany();
+
+    log.debug(`${lhd} products [${JSON.stringify(products)}]`);
 
     return products;
   }

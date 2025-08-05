@@ -209,6 +209,7 @@ export class ProductsController {
                   'https://vvolt-market.s3.ap-northeast-2.amazonaws.com/uploads/20250728/b8a67444d7f043e68bdfbc22050e6300',
               },
             ],
+            createdAt: '2025-07-29T07:09:50.900Z',
           },
         ],
       },
