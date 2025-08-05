@@ -13,7 +13,7 @@ export class ProductImage {
   id: number;
 
   @Column({ length: 255 })
-  image_url: string;
+  imageUrl: string;
 
   @ManyToOne(() => Product, (product) => product.images, {
     onDelete: 'CASCADE',

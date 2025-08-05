@@ -118,7 +118,7 @@ export class ProductsController {
         code: 'S200',
         message: 'Success',
         data: {
-          image_url: [
+          imageUrl: [
             'https://vvolt-market.s3.ap-northeast-2.amazonaws.com/uploads/20250730/fa29469964884ec18e215576ec96a51e',
             'https://vvolt-market.s3.ap-northeast-2.amazonaws.com/uploads/20250730/42aa9e5a8e504a62bc747bcb5d038f04',
             'https://vvolt-market.s3.ap-northeast-2.amazonaws.com/uploads/20250730/0a8c6dfe06aa42d59ccb40357ead5e5a',
@@ -160,7 +160,7 @@ export class ProductsController {
       });
     }
 
-    const data = { image_url: files.map((f) => f.location) };
+    const data = { imageUrl: files.map((f) => f.location) };
 
     log.info(`${lhd} success.`);
     return successResponse(data);
@@ -205,7 +205,7 @@ export class ProductsController {
             },
             images: [
               {
-                image_url:
+                imageUrl:
                   'https://vvolt-market.s3.ap-northeast-2.amazonaws.com/uploads/20250728/b8a67444d7f043e68bdfbc22050e6300',
               },
             ],
@@ -266,7 +266,7 @@ export class ProductsController {
             },
             images: [
               {
-                image_url:
+                imageUrl:
                   'https://vvolt-market.s3.ap-northeast-2.amazonaws.com/uploads/20250728/b8a67444d7f043e68bdfbc22050e6300',
               },
             ],
@@ -360,19 +360,19 @@ export class ProductsController {
             },
             images: [
               {
-                image_url:
+                imageUrl:
                   'https://vvolt-market.s3.ap-northeast-2.amazonaws.com/uploads/20250728/49b5e88a50164901875e69e8dffcf818',
               },
               {
-                image_url:
+                imageUrl:
                   'https://vvolt-market.s3.ap-northeast-2.amazonaws.com/uploads/20250728/f965cd2853ba456b861d85b5ac3896ff',
               },
               {
-                image_url:
+                imageUrl:
                   'https://vvolt-market.s3.ap-northeast-2.amazonaws.com/uploads/20250728/d9457752594a427293773f1bb5e7f4bd',
               },
               {
-                image_url:
+                imageUrl:
                   'https://vvolt-market.s3.ap-northeast-2.amazonaws.com/uploads/20250728/b8a67444d7f043e68bdfbc22050e6300',
               },
             ],

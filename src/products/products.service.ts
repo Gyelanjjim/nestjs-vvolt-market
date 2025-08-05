@@ -93,7 +93,7 @@ export class ProductsService {
       if (imageUrl && imageUrl.length > 0) {
         const imageEntities = imageUrl.map((url) =>
           this.productImageRepo.create({
-            image_url: url,
+            imageUrl: url,
             product: { id: productId } as Product,
           }),
         );
@@ -133,7 +133,7 @@ export class ProductsService {
         'product.longitude',
         'category.id',
         'category.name',
-        'images.image_url',
+        'images.imageUrl',
       ]);
 
     // 정렬 조건
@@ -151,8 +151,6 @@ export class ProductsService {
     }
 
     const products = await qb.getMany();
-
-    log.debug(`${lhd} products [${JSON.stringify(products)}]`);
 
     return products;
   }
@@ -175,10 +173,10 @@ export class ProductsService {
         'product.status',
         'category.id',
         'category.name',
-        'images.image_url',
+        'images.imageUrl',
         'seller.id',
         'seller.nickname',
-        'seller.user_image',
+        'seller.userImage',
       ])
       .getOne();
 
@@ -189,6 +187,11 @@ export class ProductsService {
         code: ErrorCode.NOT_FOUND,
       });
     }
+
+    // 좋아요 개수
+    const likeCount = await this.likeRepo.count({
+      where: { product: { id: productId } },
+    });
 
     // 스토어의 총 상품 수
     const productCount = await this.productRepo.count({
@@ -213,6 +216,7 @@ export class ProductsService {
 
     return {
       product,
+      likeCount,
       store: {
         id: product.seller.id,
         nickname: product.seller.nickname,
@@ -246,7 +250,7 @@ export class ProductsService {
         'product.price',
         'product.location',
         'product.createdAt',
-        'images.image_url',
+        'images.imageUrl',
         'category.id',
         'category.name',
       ])
@@ -319,7 +323,7 @@ export class ProductsService {
         const imageEntities = dto.imageUrl.map((url) =>
           this.productImageRepo.create({
             product: { id: productId } as Product,
-            image_url: url,
+            imageUrl: url,
           }),
         );
         await queryRunner.manager.save(imageEntities);
@@ -331,7 +335,7 @@ export class ProductsService {
       //     where: { product: { id: productId } },
       //   });
 
-      //   const prevUrls = prevImages.map((img) => img.image_url);
+      //   const prevUrls = prevImages.map((img) => img.imageUrl);
       //   const newUrls = dto.imageUrl;
 
       //   // 2. 제거된 이미지 URL 목록 추출
@@ -352,7 +356,7 @@ export class ProductsService {
       //   const imageEntities = newUrls.map((url) =>
       //     this.productImageRepo.create({
       //       product: { id: productId } as Product,
-      //       image_url: url,
+      //       imageUrl: url,
       //     }),
       //   );
       //   await queryRunner.manager.save(imageEntities);

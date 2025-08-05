@@ -86,12 +86,12 @@ export class LikesService {
         'p.price AS productPrice',
         'p.location AS location',
         'p.created_at AS createdAt',
-        'pi.image_url AS imageUrl',
+        'pi.imageUrl AS imageUrl',
         'l.user_id AS userId',
       ])
       .where('l.user_id = :userId', { userId })
       .groupBy('p.id')
-      .addGroupBy('pi.image_url')
+      .addGroupBy('pi.imageUrl')
       .getRawMany();
   }
 }

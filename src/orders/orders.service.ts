@@ -27,7 +27,7 @@ export class OrdersService {
           'product.price',
           'product.createdAt',
           'product.location',
-          'images.image_url',
+          'images.imageUrl',
         ])
         .where('orders.user.id = :userId', { userId })
         .getMany();
@@ -41,7 +41,7 @@ export class OrdersService {
           productPrice: p.price,
           registerDate: p.createdAt,
           location: p.location,
-          images: p.images?.map((img) => img.image_url) || [],
+          images: p.images?.map((img) => img.imageUrl) || [],
         };
       });
 
