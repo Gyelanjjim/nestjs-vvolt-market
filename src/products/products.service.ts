@@ -123,17 +123,22 @@ export class ProductsService {
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.images', 'images') // @OneToMany로 연결된 product_images
+      .leftJoinAndSelect('product.seller', 'seller') // User entity
       .select([
         'product.id',
         'product.name',
         'product.price',
-        'product.createdAt',
         'product.location',
         'product.latitude',
         'product.longitude',
+        'product.createdAt',
         'category.id',
         'category.name',
+        'images.id',
         'images.imageUrl',
+        'seller.id',
+        'seller.nickname',
+        'seller.userImage',
       ]);
 
     // 정렬 조건
@@ -152,7 +157,10 @@ export class ProductsService {
 
     const products = await qb.getMany();
 
-    return products;
+    return {
+      total: products.length,
+      list: products,
+    };
   }
 
   async findOne(productId: number, userId: number, lhd: string) {
@@ -188,6 +196,21 @@ export class ProductsService {
       });
     }
 
+    const otherProducts = await this.productRepo
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.images', 'images')
+      .where('product.seller.id = :sellerId', { sellerId: product.seller.id })
+      .andWhere('product.id != :productId', { productId })
+      .orderBy('product.id', 'DESC')
+      .limit(2)
+      .getMany();
+
+    const storeImages = otherProducts.map((product) => ({
+      id: product.id,
+      price: product.price,
+      imageUrls: product.images.map((img) => img.imageUrl),
+    }));
+
     // 좋아요 개수
     const likeCount = await this.likeRepo.count({
       where: { product: { id: productId } },
@@ -215,14 +238,17 @@ export class ProductsService {
     });
 
     return {
-      product,
-      likeCount,
+      product: {
+        ...product,
+        likeCount,
+      },
       store: {
         id: product.seller.id,
         nickname: product.seller.nickname,
         userImage: product.seller.userImage,
         productCount,
         followerCount,
+        otherProducts: storeImages,
       },
       reviews,
       isLiked: !!isLiked,
@@ -243,16 +269,23 @@ export class ProductsService {
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.images', 'images')
+      .leftJoinAndSelect('product.seller', 'seller')
       .where('product.seller.id = :storeId', { storeId })
       .select([
         'product.id',
         'product.name',
         'product.price',
         'product.location',
+        'product.latitude',
+        'product.longitude',
         'product.createdAt',
-        'images.imageUrl',
         'category.id',
         'category.name',
+        'images.id',
+        'images.imageUrl',
+        'seller.id',
+        'seller.nickname',
+        'seller.userImage',
       ])
       .orderBy('product.createdAt', 'DESC')
       .getMany();
@@ -260,7 +293,10 @@ export class ProductsService {
     log.info(
       `${lhd} success. storeId [${storeId}], count [${products.length}]`,
     );
-    return products;
+    return {
+      total: products.length,
+      list: products,
+    };
   }
 
   async update(

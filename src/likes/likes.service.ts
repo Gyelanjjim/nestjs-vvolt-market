@@ -66,6 +66,67 @@ export class LikesService {
     }
   }
 
+  // async getLikesByUserId(userId: number, lhd: string) {
+  //   const user = await this.userRepo.findOneBy({ id: userId });
+  //   if (!user) {
+  //     log.warn(`${lhd} failed. not found user. => userId [${userId}]`);
+  //     throw new NotFoundException({
+  //       message: `Not found user. userId [${userId}]`,
+  //       code: ErrorCode.NOT_FOUND,
+  //     });
+  //   }
+
+  //   const rows = await this.likeRepo
+  //     .createQueryBuilder('l')
+  //     .innerJoin('l.product', 'p')
+  //     .leftJoin('p.images', 'pi')
+  //     .select([
+  //       'p.id AS productId',
+  //       'p.name AS productName',
+  //       'p.price AS productPrice',
+  //       'p.location AS location',
+  //       'p.created_at AS createdAt',
+  //       'pi.imageUrl AS imageUrl',
+  //       'l.user_id AS userId',
+  //     ])
+  //     .where('l.user_id = :userId', { userId })
+  //     .getRawMany();
+
+  //   // JS에서 그룹핑
+  //   const productMap = new Map();
+
+  //   for (const row of rows) {
+  //     const {
+  //       productId,
+  //       productName,
+  //       productPrice,
+  //       location,
+  //       createdAt,
+  //       imageUrl,
+  //       userId,
+  //     } = row;
+
+  //     if (!productMap.has(productId)) {
+  //       productMap.set(productId, {
+  //         productId,
+  //         productName,
+  //         productPrice,
+  //         location,
+  //         createdAt,
+  //         userId,
+  //         imageUrls: imageUrl ? [imageUrl] : [],
+  //       });
+  //     } else {
+  //       if (imageUrl) {
+  //         productMap.get(productId).imageUrls.push(imageUrl);
+  //       }
+  //     }
+  //   }
+
+  //   const list = Array.from(productMap.values());
+
+  //   return { total: list.length, list };
+  // }
   async getLikesByUserId(userId: number, lhd: string) {
     const user = await this.userRepo.findOneBy({ id: userId });
     if (!user) {
@@ -76,22 +137,39 @@ export class LikesService {
       });
     }
 
-    return await this.likeRepo
-      .createQueryBuilder('l')
-      .innerJoin('l.product', 'p')
-      .leftJoin('p.images', 'pi')
+    const likes = await this.likeRepo
+      .createQueryBuilder('like')
+      .innerJoinAndSelect('like.product', 'product')
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.images', 'images')
+      .leftJoinAndSelect('product.seller', 'seller')
+      .where('like.user = :userId', { userId })
+      .orderBy('like.createdAt', 'DESC')
       .select([
-        'p.id AS productId',
-        'p.name AS productName',
-        'p.price AS productPrice',
-        'p.location AS location',
-        'p.created_at AS createdAt',
-        'pi.imageUrl AS imageUrl',
-        'l.user_id AS userId',
+        'like.id',
+        'product.id',
+        'product.name',
+        'product.price',
+        'product.location',
+        'product.latitude',
+        'product.longitude',
+        'product.createdAt',
+        'category.id',
+        'category.name',
+        'images.id',
+        'images.imageUrl',
+        'seller.id',
+        'seller.nickname',
+        'seller.userImage',
       ])
-      .where('l.user_id = :userId', { userId })
-      .groupBy('p.id')
-      .addGroupBy('pi.imageUrl')
-      .getRawMany();
+      .getMany();
+
+    // product만 추출
+    const likedProducts = likes.map((like) => like.product);
+
+    return {
+      total: likedProducts.length,
+      list: likedProducts,
+    };
   }
 }
