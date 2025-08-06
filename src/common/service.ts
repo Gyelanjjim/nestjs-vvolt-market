@@ -157,3 +157,8 @@ export function getLogTime(): string {
   const KST = 9 * 60 * 60 * 1000;
   return getCurrentTime(KST).replace('T', ' ').substring(0, 19);
 }
+
+export function getKstTime(localeTime: Date): string {
+  const kstDate = new Date(localeTime.getTime() + 9 * 60 * 60 * 1000);
+  return kstDate.toISOString();
+}
