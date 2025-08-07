@@ -17,7 +17,7 @@ import { UserDetailDto } from 'src/users/dto/get-user-detail.dto';
 import { log } from 'src/common/logger.util';
 import { Follow } from 'src/follow/entities/follow.entity';
 import { ErrorCode } from 'src/common/error-code.enum';
-import { getKstTime } from 'src/common/service';
+// import { getKstTime } from 'src/common/service';
 
 @Injectable()
 export class UsersService {
@@ -184,7 +184,7 @@ export class UsersService {
 
     return {
       ...result,
-      sellerOpenDay: getKstTime(result.sellerOpenDay),
+      // sellerOpenDay: getKstTime(result.sellerOpenDay),
       name: result.name || result.nickname,
       reviewNum: Number(result.reviewNum),
       onSaleNum: Number(result.onSaleNum),

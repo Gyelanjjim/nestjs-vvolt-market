@@ -18,7 +18,7 @@ import { Review } from 'src/review/entities/review.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Follow } from 'src/follow/entities/follow.entity';
 import { ErrorCode } from 'src/common/error-code.enum';
-import { getKstTime } from 'src/common/service';
+// import { getKstTime } from 'src/common/service';
 
 @Injectable()
 export class ProductsService {
@@ -160,7 +160,8 @@ export class ProductsService {
 
     return {
       total: products.length,
-      list: products.map((v) => ({ ...v, createdAt: getKstTime(v.createdAt) })),
+      // list: products.map((v) => ({ ...v, createdAt: getKstTime(v.createdAt) })),
+      list: products,
     };
   }
 
@@ -239,12 +240,12 @@ export class ProductsService {
       where: { product: { id: productId }, user: { id: userId } },
     });
 
-    log.debug(`createdAt: [${getKstTime(product.createdAt)}]`);
+    // log.debug(`createdAt: [${getKstTime(product.createdAt)}]`);
 
     return {
       product: {
         ...product,
-        createdAt: getKstTime(product.createdAt),
+        // createdAt: getKstTime(product.createdAt),
         likeCount,
       },
       store: {
@@ -300,7 +301,8 @@ export class ProductsService {
     );
     return {
       total: products.length,
-      list: products.map((v) => ({ ...v, createdAt: getKstTime(v.createdAt) })),
+      // list: products.map((v) => ({ ...v, createdAt: getKstTime(v.createdAt) })),
+      list: products,
     };
   }
 
