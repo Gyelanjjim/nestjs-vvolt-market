@@ -1,7 +1,7 @@
 # 🏭️ VVolt Market (NestJS)
 
 📆 **개발 기간**: 2025.07.23 ~ 2025.07.31 (1차 개발) <br/>
-🚀 **배포 주소**: [https://vvolt-market.kr/api-docs](https://vvolt-market.kr/api-docs)
+🚀 **배포 주소**: [https://vvolt-market.kr/](https://vvolt-market.kr/)
 
 ---
 
@@ -46,8 +46,8 @@ NestJS 기반으로 서버를 재구현하여 **API 응답 표준화**, **Docker
 | PUT    | `/api/products/:productId`      | 상품 정보 수정                               |
 | DELETE | `/api/products/:productId`      | 상품 삭제                                    |
 | POST   | `/api/likes/:productId`         | 상품 찜(좋아요) 등록/삭제 (toggle)           |
-| POST   | `/api/tosspayment/confirm`      | 토스 결제 승인                               |
 | GET    | `/api/likes/:userId`            | 특정 사용자가 찜한 상품 목록 조회            |
+| POST   | `/api/tosspayment/confirm`      | 토스 결제 승인                               |
 | POST   | `/api/follow/:followeeId`       | 특정 사용자 팔로우/언팔로우 (toggle)         |
 | GET    | `/api/follow/follower/:userId`  | 특정 사용자의 팔로워 목록                    |
 | GET    | `/api/follow/following/:userId` | 특정 사용자의 팔로잉 목록                    |
@@ -82,7 +82,7 @@ NestJS 기반으로 서버를 재구현하여 **API 응답 표준화**, **Docker
 ---
 
 ## 📀 데모
-
+- 🚀 [배포 주소](https://vvolt-market.kr/)
 - 📺 [시연 영상 링크](https://www.youtube.com/watch?v=UDNfYsCpGR4) _(예시)_
 - 📄 [API 문서](https://vvolt-market.kr/api-docs) _(Swagger 기반)_
 
